@@ -1,0 +1,20 @@
+#!/bin/sh
+
+[ "${ACTION}" = "add" ] || exit
+
+case "${INTERFACE}" in
+"usb"*)
+	;;
+*)
+	exit
+	;;
+esac
+
+idx=0
+while [ $idx -le 5 ]; do
+	[ -L "/sys/class/net/eth$idx" ] || {
+		ip link set "${INTERFACE}" name "eth$idx"
+		exit
+	}
+	idx=$((idx+1))
+done
