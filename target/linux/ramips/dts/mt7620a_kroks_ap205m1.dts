@@ -1,0 +1,70 @@
+#include "mt7620a_kroks.dtsi"
+#include "flash_kroks_16m.dtsi"
+
+#include <dt-bindings/input/input.h>
+#include <dt-bindings/gpio/gpio.h>
+
+/ {
+	compatible = "kroks,ap205m1", "ralink,mt7620a-soc";
+	model = "Kroks AP205M1";
+
+	leds {
+		compatible = "gpio-leds";
+
+		modem1 {
+			label = "ap205m1:led:modem1";
+			gpios = <&gpio1 15 GPIO_ACTIVE_LOW>;
+		};
+
+		modem2 {
+			label = "ap205m1:led:modem2";
+			gpios = <&gpio1 14 GPIO_ACTIVE_LOW>;
+		};
+
+		wifi {
+			label = "ap205m1:led:wifi";
+			gpios = <&gpio3 0 GPIO_ACTIVE_LOW>;
+			linux,default-trigger = "phy0tpt";
+		};
+	};
+
+	keys {
+		compatible = "gpio-keys";
+
+		reset {
+			label = "reset";
+			gpios = <&gpio0 1 GPIO_ACTIVE_LOW>;
+			linux,code = <KEY_RESTART>;
+		};
+	};
+
+	gpio_export {
+		compatible = "gpio-export";
+		#size-cells = <0>;
+
+		modem1reset {
+			gpio-export,name = "modem1reset";
+			gpio-export,output = <1>;
+			gpios = <&gpio2 5 GPIO_ACTIVE_HIGH>;
+		};
+
+		modem2reset {
+			gpio-export,name = "modem2reset";
+			gpio-export,output = <1>;
+			gpios = <&gpio2 6 GPIO_ACTIVE_HIGH>;
+		};
+	};
+};
+
+&state_default {
+	gpio {
+		ralink,group = "i2c", "uartf", "mdio", "spi refclk", "wled", "pcie", "nd_sd", "pa";
+		ralink,function = "gpio";
+	};
+};
+
+&ethernet {
+	pinctrl-names = "default";
+	pinctrl-0 = <&ephy_pins>;
+	mediatek,portmap = "llllw";
+};

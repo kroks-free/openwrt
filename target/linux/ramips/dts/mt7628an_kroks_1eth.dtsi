@@ -1,0 +1,33 @@
+#include "mt7628an_kroks.dtsi"
+#include "flash_kroks_16m.dtsi"
+
+#include <dt-bindings/input/input.h>
+#include <dt-bindings/gpio/gpio.h>
+
+/ {
+	keys {
+		compatible = "gpio-keys";
+
+		reset {
+			label = "reset";
+			gpios = <&gpio1 6 GPIO_ACTIVE_LOW>;
+			linux,code = <KEY_RESTART>;
+		};
+	};
+};
+
+&esw {
+	mediatek,portmap = <0x2f>;
+};
+
+&state_default {
+	gpio_reset {
+		ralink,group = "wdt";
+		ralink,function = "gpio";
+	};
+
+	p0led_an {
+		ralink,group = "p0led_an";
+		ralink,function = "p0led_an";
+	};
+};

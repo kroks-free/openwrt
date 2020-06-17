@@ -1,0 +1,44 @@
+/dts-v1/;
+
+#include "mt7628an.dtsi"
+
+&ethernet {
+	mtd-mac-address = <&factory 0x4>;
+};
+
+&wmac {
+	status = "okay";
+	mediatek,mtd-eeprom = <&factory 0x0000>;
+};
+
+&spi0 {
+	status = "okay";
+
+	flash@0 {
+		compatible = "jedec,spi-nor";
+		reg = <0>;
+		spi-max-frequency = <25000000>;
+		m25p,fast-read;
+
+		partitions: partitions {
+			compatible = "fixed-partitions";
+			#address-cells = <1>;
+			#size-cells = <1>;
+
+			partition@0 {
+				label = "u-boot";
+				reg = <0x0 0x30000>;
+			};
+
+			partition@30000 {
+				label = "u-boot-env";
+				reg = <0x30000 0x10000>;
+			};
+
+			factory: partition@40000 {
+				label = "factory";
+				reg = <0x40000 0x10000>;
+			};
+		};
+	};
+};

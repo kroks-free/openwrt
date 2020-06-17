@@ -1,0 +1,5 @@
+#include "mt7620a_kroks_ap221.dts"
+
+&wmac {
+	status = "okay";
+};

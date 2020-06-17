@@ -1,0 +1,40 @@
+#include "mt7620a_kroks_1eth-1mm.dtsi"
+
+/ {
+	compatible = "kroks,kndrt22r1", "ralink,mt7620a-soc";
+	model = "Kroks KNdRt22R1";
+
+	aliases {
+		led-boot = &led_status;
+		led-failsafe = &led_status;
+		led-running = &led_status;
+		led-upgrade = &led_status;
+	};
+
+	leds {
+		compatible = "gpio-leds";
+
+		lan {
+			label = "kndrt22r1:led:lan";
+			gpios = <&gpio2 1 GPIO_ACTIVE_LOW>;
+		};
+
+		wifi {
+			label = "kndrt22r1:led:wifi";
+			gpios = <&gpio3 0 GPIO_ACTIVE_LOW>;
+			linux,default-trigger = "phy0tpt";
+		};
+
+		led_status: status {
+			label = "kndrt22r1:led:status";
+			gpios = <&gpio2 0 GPIO_ACTIVE_LOW>;
+		};
+	};
+};
+
+&state_default {
+	gpio_led {
+		ralink,group = "ephy", "wled";
+		ralink,function = "gpio";
+	};
+};
