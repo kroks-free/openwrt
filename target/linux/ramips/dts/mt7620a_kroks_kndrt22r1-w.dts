@@ -1,0 +1,7 @@
+/dts-v1/;
+
+#include "mt7620a_kroks_kndrt22r1.dts"
+
+&wmac {
+	status = "okay";
+};

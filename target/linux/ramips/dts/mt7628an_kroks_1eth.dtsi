@@ -1,0 +1,35 @@
+/dts-v1/;
+
+#include "mt7628an_kroks.dtsi"
+#include "mt7628an_kroks_16m.dtsi"
+
+#include <dt-bindings/input/input.h>
+#include <dt-bindings/gpio/gpio.h>
+
+/ {
+	keys {
+		compatible = "gpio-keys";
+
+		reset {
+			label = "reset";
+			gpios = <&gpio1 6 GPIO_ACTIVE_LOW>;
+			linux,code = <KEY_RESTART>;
+		};
+	};
+};
+
+&esw {
+	mediatek,portmap = <0x2f>;
+};
+
+&state_default {
+	gpio {
+		ralink,group = "i2s", "wdt", "wled_an";
+		ralink,function = "gpio";
+	};
+
+	p0led_an {
+		ralink,group = "p0led_an";
+		ralink,function = "p0led_an";
+	};
+};

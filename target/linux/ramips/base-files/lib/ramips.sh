@@ -3,6 +3,20 @@
 # Copyright (C) 2010-2013 OpenWrt.org
 #
 
+kroks_board_detect() {
+	local machine="$1"
+	local model="${machine##* }"
+
+	# for customer specific
+	case "$model" in
+		*)
+			name=$(echo "${model}" | tr 'A-Z' 'a-z')
+			;;
+	esac
+
+	echo "$name"
+}
+
 ramips_board_detect() {
 	local machine
 	local name
@@ -201,6 +215,9 @@ ramips_board_detect() {
 		;;
 	*"FreeStation5")
 		name="freestation5"
+		;;
+	"Kroks"*)
+		name=$(kroks_board_detect "$machine")
 		;;
 	*"GL-MT300A")
 		name="gl-mt300a"
