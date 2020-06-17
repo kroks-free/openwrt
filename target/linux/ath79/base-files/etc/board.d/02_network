@@ -4,6 +4,21 @@
 . /lib/functions/uci-defaults.sh
 . /lib/functions/k2t.sh
 
+kroks_setup_network() {
+	local board="$1"
+
+	case "$board" in
+	kndrt11r*)
+		ucidef_set_interface_lan "eth0 eth1"
+		ucidef_set_interface "modem1hilink" ifname "eth2" protocol "dhcp"
+		;;
+	*)
+		return 1
+		;;
+	esac
+	return 0
+}
+
 ath79_setup_interfaces()
 {
 	local board="$1"
@@ -287,7 +302,9 @@ ath79_setup_interfaces()
 			"0@eth0" "3:lan:1" "4:lan:2"
 		;;
 	*)
-		ucidef_set_interfaces_lan_wan "eth0" "eth1"
+		kroks_setup_network "$board" || {
+			ucidef_set_interfaces_lan_wan "eth0" "eth1"
+		}
 		;;
 	esac
 }

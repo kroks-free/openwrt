@@ -10,6 +10,16 @@ touch /etc/config/ubootenv
 . /lib/uboot-envtools.sh
 . /lib/functions.sh
 
+kroks_setup_env() {
+	local board="$1"
+
+	case "$board" in
+	kndrt11r*)
+		ubootenv_add_uci_config "/dev/mtd1" "0x0" "0x1000" "0x10000"
+		;;
+	esac
+}
+
 board=$(board_name)
 
 case "$board" in
@@ -38,6 +48,9 @@ glinet,gl-ar150)
 netgear,wndr3700|\
 netgear,wndr3700-v2)
 	ubootenv_add_uci_config "/dev/mtd1" "0x0" "0x20000" "0x10000"
+	;;
+*)
+	kroks_setup_env "$board"
 	;;
 esac
 
