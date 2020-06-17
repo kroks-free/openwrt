@@ -1,0 +1,30 @@
+--- a/drivers/net/usb/qmi_wwan.c
++++ b/drivers/net/usb/qmi_wwan.c
+@@ -1033,7 +1033,7 @@
+ 	{QMI_FIXED_INTF(0x05c6, 0x9011, 4)},
+ 	{QMI_FIXED_INTF(0x05c6, 0x9021, 1)},
+ 	{QMI_FIXED_INTF(0x05c6, 0x9022, 2)},
+-	{QMI_FIXED_INTF(0x05c6, 0x9025, 4)},	/* Alcatel-sbell ASB TL131 TDD LTE  (China Mobile) */
++	{QMI_QUIRK_SET_DTR(0x05c6, 0x9025, 4)}, /* YUGA CLM920-NC5_2 */
+ 	{QMI_FIXED_INTF(0x05c6, 0x9026, 3)},
+ 	{QMI_FIXED_INTF(0x05c6, 0x902e, 5)},
+ 	{QMI_FIXED_INTF(0x05c6, 0x9031, 5)},
+--- a/drivers/usb/serial/option.c
++++ b/drivers/usb/serial/option.c
+@@ -243,6 +243,7 @@
+ #define UBLOX_PRODUCT_R410M			0x90b2
+ /* These Yuga products use Qualcomm's vendor ID */
+ #define YUGA_PRODUCT_CLM920_NC5			0x9625
++#define YUGA_PRODUCT_CLM920_NC5_2		0x9025
+ 
+ #define QUECTEL_VENDOR_ID			0x2c7c
+ /* These Quectel products use Quectel's vendor ID */
+@@ -1092,6 +1093,8 @@
+ 	/* Yuga products use Qualcomm vendor ID */
+ 	{ USB_DEVICE(QUALCOMM_VENDOR_ID, YUGA_PRODUCT_CLM920_NC5),
+ 	  .driver_info = RSVD(1) | RSVD(4) },
++	{ USB_DEVICE(QUALCOMM_VENDOR_ID, YUGA_PRODUCT_CLM920_NC5_2),
++	  .driver_info = RSVD(1) | RSVD(4) },
+ 	/* u-blox products using Qualcomm vendor ID */
+ 	{ USB_DEVICE(QUALCOMM_VENDOR_ID, UBLOX_PRODUCT_R410M),
+ 	  .driver_info = RSVD(1) | RSVD(3) },
