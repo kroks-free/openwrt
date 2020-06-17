@@ -1,0 +1,16 @@
+/dts-v1/;
+
+#include "mt7628an_kroks_4eth.dtsi"
+
+/ {
+	gpio_export {
+		compatible = "gpio-export";
+		#size-cells = <0>;
+
+		modem1power {
+			gpio-export,name = "modem1power";
+			gpio-export,output = <1>;
+			gpios = <&gpio0 1 GPIO_ACTIVE_HIGH>;
+		};
+	};
+};

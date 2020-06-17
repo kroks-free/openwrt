@@ -10,6 +10,25 @@ touch /etc/config/ubootenv
 . /lib/uboot-envtools.sh
 . /lib/functions.sh
 
+kroks_setup_env() {
+	local board="$1"
+
+	case "$board" in
+	ap205m1|\
+	ap221|\
+	ap221m3|\
+	ap221m4|\
+	ap222|\
+	ap223|\
+	ap223m1|\
+	ap223m3|\
+	kndrt22r*|\
+	kndrt31r*)
+		ubootenv_add_uci_config "/dev/mtd1" "0x0" "0x1000" "0x10000"
+		;;
+	esac
+}
+
 board=$(board_name)
 
 case "$board" in
@@ -36,6 +55,9 @@ zbt-wg2626)
 xiaomi,mir3p|\
 xiaomi,mir3g)
 	ubootenv_add_uci_config "/dev/mtd1" "0x0" "0x1000" "0x20000"
+	;;
+*)
+	kroks_setup_env "$board"
 	;;
 esac
 

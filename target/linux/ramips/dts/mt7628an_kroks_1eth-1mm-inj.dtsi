@@ -1,0 +1,65 @@
+/dts-v1/;
+
+#include "mt7628an_kroks_1eth.dtsi"
+
+/ {
+	aliases {
+		serial1 = &uart1;
+	};
+
+	gpio_export {
+		compatible = "gpio-export";
+		#size-cells = <0>;
+
+		modem1power {
+			gpio-export,name = "modem1power";
+			gpio-export,output = <1>;
+			gpios = <&gpio0 1 GPIO_ACTIVE_HIGH>;
+		};
+
+		modem1sim1 {
+			gpio-export,name = "modem1sim1";
+			gpio-export,output = <0>;
+			gpios = <&gpio0 3 GPIO_ACTIVE_HIGH>;
+		};
+
+		modem1rsim1 {
+			gpio-export,name = "modem1rsim1";
+			gpio-export,output = <1>;
+			gpios = <&gpio1 7 GPIO_ACTIVE_HIGH>;
+		};
+
+		modem1rsim2 {
+			gpio-export,name = "modem1rsim2";
+			gpio-export,output = <0>;
+			gpios = <&gpio1 8 GPIO_ACTIVE_HIGH>;
+		};
+
+		modem1rsim3 {
+			gpio-export,name = "modem1rsim3";
+			gpio-export,output = <0>;
+			gpios = <&gpio1 9 GPIO_ACTIVE_HIGH>;
+		};
+
+		modem1rsim4 {
+			gpio-export,name = "modem1rsim4";
+			gpio-export,output = <0>;
+			gpios = <&gpio1 10 GPIO_ACTIVE_HIGH>;
+		};
+	};
+};
+
+&uart1 {
+	status = "okay";
+};
+
+&state_default {
+	gpio {
+		ralink,group = "i2s", "wdt", "p4led_an", "p3led_an", "p2led_an", "p1led_an", "wled_an";
+		ralink,function = "gpio";
+	};
+};
+
+&wmac {
+	status = "disabled";
+};
