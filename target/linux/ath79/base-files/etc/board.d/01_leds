@@ -4,6 +4,17 @@
 
 board_config_update
 
+kroks_setup_leds() {
+	local board="$1"
+	local boardname="$2"
+
+	case "$board" in
+	kndrt11r*)
+		ucidef_set_led_netdev "lan" "LAN" "$boardname:led:lan" "eth0"
+		;;
+	esac
+}
+
 board=$(board_name)
 boardname="${board##*,}"
 
@@ -264,6 +275,9 @@ yuncore,a770)
 zbtlink,zbt-wd323)
 	ucidef_set_led_switch "lan1" "LAN1" "zbt-wd323:orange:lan1" "switch0" "0x10"
 	ucidef_set_led_switch "lan2" "LAN2" "zbt-wd323:orange:lan2" "switch0" "0x08"
+	;;
+*)
+	kroks_setup_leds "$board" "$boardname"
 	;;
 esac
 

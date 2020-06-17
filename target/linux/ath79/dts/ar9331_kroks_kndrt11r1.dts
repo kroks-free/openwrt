@@ -1,0 +1,24 @@
+#include "ar9331_kroks.dtsi"
+
+/ {
+	model = "Kroks KNdRt11R1";
+	compatible = "kroks,kndrt11r1", "qca,ar9331";
+
+	leds {
+		compatible = "gpio-leds";
+
+		pinctrl-names = "default";
+		pinctrl-0 = <&switch_led_disable_pins>;
+
+		lan {
+			label = "kndrt11r1:led:lan";
+			gpios = <&gpio 27 GPIO_ACTIVE_LOW>;
+		};
+
+		wlan {
+			label = "kndrt11r1:led:wlan";
+			gpios = <&gpio 8 GPIO_ACTIVE_LOW>;
+			linux,default-trigger = "phy0tpt";
+		};
+	};
+};

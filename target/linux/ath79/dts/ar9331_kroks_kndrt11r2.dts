@@ -1,0 +1,22 @@
+#include "ar9331_kroks.dtsi"
+
+/ {
+	model = "Kroks KNdRt11R2";
+	compatible = "kroks,kndrt11r2", "qca,ar9331";
+
+	leds {
+		compatible = "gpio-leds";
+
+		pinctrl-names = "default";
+		pinctrl-0 = <&switch_led_disable_pins>;
+
+		lan {
+			label = "kndrt11r2:led:lan";
+			gpios = <&gpio 27 GPIO_ACTIVE_LOW>;
+		};
+	};
+};
+
+&wmac {
+	status = "disabled";
+};
