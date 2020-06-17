@@ -1,0 +1,111 @@
+// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
+/dts-v1/;
+
+#include "ar9331.dtsi"
+
+#include <dt-bindings/gpio/gpio.h>
+#include <dt-bindings/input/input.h>
+
+/ {
+	chosen {
+		bootargs = "console=ttyATH0,57600";
+	};
+
+	aliases {
+		serial0 = &uart;
+	};
+
+	keys {
+		compatible = "gpio-keys";
+
+		reset {
+			label = "reset";
+			gpios = <&gpio 11 GPIO_ACTIVE_LOW>;
+			linux,code = <KEY_RESTART>;
+		};
+	};
+};
+
+&spi {
+	status = "okay";
+	num-cs = <1>;
+
+	flash@0 {
+		compatible = "jedec,spi-nor";
+		reg = <0>;
+		spi-max-frequency = <25000000>;
+
+		partitions {
+			compatible = "fixed-partitions";
+			#address-cells = <1>;
+			#size-cells = <1>;
+
+			partition@0 {
+				label = "u-boot";
+				reg = <0x0 0x10000>;
+			};
+
+			ubootenv: partition@10000 {
+				label = "u-boot-env";
+				reg = <0x10000 0x10000>;
+			};
+
+			partition@20000 {
+				compatible = "tplink,firmware";
+				label = "firmware";
+				reg = <0x20000 0xed0000>;
+			};
+
+			partition@ef0000 {
+				label = "memory";
+				reg = <0xef0000 0x100000>;
+			};
+
+			art: partition@ff0000 {
+				label = "art";
+				reg = <0xff0000 0x10000>;
+				read-only;
+			};
+		};
+	};
+};
+
+&uart {
+	status = "okay";
+};
+
+&wmac {
+	status = "okay";
+	mtd-cal-data = <&art 0x1000>;
+	mtd-mac-address = <&ubootenv 0xfc00>;
+};
+
+&usb {
+	dr_mode = "host";
+	status = "okay";
+};
+
+&usb_phy {
+	status = "okay";
+};
+
+&eth0 {
+	status = "okay";
+
+	mtd-mac-address = <&ubootenv 0xfc00>;
+	mtd-mac-address-increment = <(-1)>;
+
+	gmac-config {
+		device = <&gmac>;
+
+		switch-phy-addr-swap = <1>;
+		switch-phy-swap = <1>;
+	};
+};
+
+&eth1 {
+	status = "okay";
+
+	mtd-mac-address = <&ubootenv 0xfc00>;
+	mtd-mac-address-increment = <1>;
+};

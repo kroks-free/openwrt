@@ -484,6 +484,38 @@ define Device/jjplus_ja76pf2
 endef
 TARGET_DEVICES += jjplus_ja76pf2
 
+define Device/kndrt11-common
+  ATH_SOC := ar9331
+  $(Device/tplink-16mlzma)
+  $(Device/Kroks-hilink)
+  $(Device/Kroks-usbstor)
+  IMAGES := sysupgrade.bin
+endef
+
+define Device/kndrt11r1
+  $(Device/kndrt11-common)
+  DEVICE_DTS := ar9331_kroks_kndrt11r1
+  DEVICE_TITLE := Kroks Rt-Brd Uw Lite
+  TPLINK_HWID := 0x3C000201
+endef
+TARGET_DEVICES += kndrt11r1
+
+define Device/kndrt11r2
+  $(Device/kndrt11-common)
+  DEVICE_DTS := ar9331_kroks_kndrt11r2
+  DEVICE_TITLE := Kroks Rt-Brd U Lite
+  TPLINK_HWID := 0x3C000201
+endef
+TARGET_DEVICES += kndrt11r2
+
+define Device/kndrt11r3
+  $(Device/kndrt11-common)
+  DEVICE_DTS := ar9331_kroks_kndrt11r3
+  DEVICE_TITLE := Kroks Rt-Cse2 sXW
+  TPLINK_HWID := 0x3C000101
+endef
+TARGET_DEVICES += kndrt11r3
+
 define Device/librerouter_librerouter-v1
   ATH_SOC := qca9558
   DEVICE_TITLE := LibreRouter v1
