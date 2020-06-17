@@ -1,0 +1,85 @@
+#include "mt7628an_kroks.dtsi"
+#include "flash_kroks_8m.dtsi"
+
+#include <dt-bindings/input/input.h>
+#include <dt-bindings/gpio/gpio.h>
+
+/ {
+	compatible = "kroks,kndrt31r14", "mediatek,mt7628an-soc";
+	model = "Kroks KNdRt31R14";
+
+	aliases {
+		led-boot = &led_power;
+		led-failsafe = &led_power;
+		led-running = &led_power;
+		led-upgrade = &led_power;
+	};
+
+	leds {
+		compatible = "gpio-leds";
+
+		led_power: power {
+			label = "kndrt31r14:led:power";
+			gpios = <&gpio1 5 GPIO_ACTIVE_LOW>;
+		};
+
+		wifi {
+			label = "kndrt31r14:led:wifi";
+			gpios = <&gpio1 12 GPIO_ACTIVE_LOW>;
+			linux,default-trigger = "phy0tpt";
+		};
+
+		usb {
+			label = "kndrt31r14:led:usb";
+			gpios = <&gpio1 14 GPIO_ACTIVE_LOW>;
+			trigger-sources = <&ohci_port1>, <&ehci_port1>;
+			linux,default-trigger = "usbport";
+		};
+	};
+
+	keys {
+		compatible = "gpio-keys";
+
+		reset {
+			label = "reset";
+			gpios = <&gpio1 6 GPIO_ACTIVE_LOW>;
+			linux,code = <KEY_RESTART>;
+		};
+	};
+};
+
+&esw {
+	mediatek,portmap = <0x2f>;
+};
+
+&state_default {
+	gpio {
+		ralink,group = "refclk", "wdt", "wled_an", "uart1";
+		ralink,function = "gpio";
+	};
+
+	p0led_an {
+		ralink,group = "p0led_an";
+		ralink,function = "p0led_an";
+	};
+
+	p1led_an {
+		ralink,group = "p1led_an";
+		ralink,function = "p1led_an";
+	};
+
+	p2led_an {
+		ralink,group = "p2led_an";
+		ralink,function = "p2led_an";
+	};
+
+	p3led_an {
+		ralink,group = "p3led_an";
+		ralink,function = "p3led_an";
+	};
+
+	p4led_an {
+		ralink,group = "p4led_an";
+		ralink,function = "p4led_an";
+	};
+};

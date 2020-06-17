@@ -77,6 +77,111 @@ define Device/amit_jboot
   DEVICE_PACKAGES := jboot-tools kmod-usb2 kmod-usb-ohci
 endef
 
+define Device/ap205m1
+  DTS := mt7620a_kroks_ap205m1
+  IMAGE_SIZE := 14m
+  DEVICE_TITLE := Kroks AP205M1
+  $(Device/Kroks-mpci)
+  $(Device/Kroks-usbstor)
+endef
+TARGET_DEVICES += ap205m1
+
+define Device/ap221-common
+  IMAGE_SIZE := 14m
+  $(Device/Kroks-mpci)
+endef
+
+define Device/ap221
+  $(Device/ap221-common)
+  $(Device/Kroks-usbstor)
+  DTS := mt7620a_kroks_ap221
+  DEVICE_TITLE := Kroks AP221
+endef
+TARGET_DEVICES += ap221
+
+define Device/ap221-w
+  $(Device/ap221-common)
+  $(Device/Kroks-usbstor)
+  DTS := mt7620a_kroks_ap221-w
+  DEVICE_TITLE := Kroks AP221-W
+  SUPPORTED_DEVICES := ap221
+endef
+TARGET_DEVICES += ap221-w
+
+define Device/kndrt22r1
+  $(Device/ap221-common)
+  DTS := mt7620a_kroks_kndrt22r1
+  DEVICE_TITLE := Kroks Rt-Brd eX
+  SUPPORTED_DEVICES := kndrt22r1 ap221m2
+endef
+TARGET_DEVICES += kndrt22r1
+
+define Device/kndrt22r1-w
+  $(Device/ap221-common)
+  DTS := mt7620a_kroks_kndrt22r1-w
+  DEVICE_TITLE := Kroks Rt-Brd eXW
+  SUPPORTED_DEVICES := kndrt22r1 ap221m2
+endef
+TARGET_DEVICES += kndrt22r1-w
+
+define Device/ap221m3
+  $(Device/ap221-common)
+  DTS := mt7620a_kroks_ap221m3
+  DEVICE_TITLE := Kroks AP221M3
+  SUPPORTED_DEVICES := ap221m3 ap221m1
+endef
+TARGET_DEVICES += ap221m3
+
+define Device/ap221m3-w
+  $(Device/ap221-common)
+  DTS := mt7620a_kroks_ap221m3-w
+  DEVICE_TITLE := Kroks AP221M3-W
+  SUPPORTED_DEVICES := ap221m3 ap221m1
+endef
+TARGET_DEVICES += ap221m3-w
+
+define Device/ap221m4
+  IMAGE_SIZE := 14m
+  DTS := mt7620a_kroks_ap221m4
+  DEVICE_TITLE := Kroks AP221M4
+  $(Device/Kroks-hilink)
+endef
+TARGET_DEVICES += ap221m4
+
+define Device/ap222
+  DTS := mt7620a_kroks_ap222
+  IMAGE_SIZE := 14m
+  DEVICE_TITLE := Kroks AP222
+  $(Device/Kroks-mpci)
+endef
+TARGET_DEVICES += ap222
+
+define Device/ap223
+  DTS := mt7620a_kroks_ap223
+  IMAGE_SIZE := 14m
+  DEVICE_TITLE := Kroks AP223
+  $(Device/Kroks-mpci)
+  $(Device/Kroks-usbstor)
+endef
+TARGET_DEVICES += ap223
+
+define Device/ap223m1
+  DTS := mt7620a_kroks_ap223m1
+  IMAGE_SIZE := 14m
+  DEVICE_TITLE := Kroks AP223M1
+  $(Device/Kroks-hilink)
+  SUPPORTED_DEVICES := ap223m1 ap223
+endef
+TARGET_DEVICES += ap223m1
+
+define Device/ap223m3
+  DTS := mt7620a_kroks_ap223m3
+  IMAGE_SIZE := 14m
+  DEVICE_TITLE := Kroks AP223M3
+  $(Device/Kroks-mpci)
+endef
+TARGET_DEVICES += ap223m3
+
 define Device/Archer
   TPLINK_HWREVADD := 0
   TPLINK_HVERSION := 3

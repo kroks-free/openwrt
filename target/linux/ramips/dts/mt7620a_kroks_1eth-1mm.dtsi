@@ -1,0 +1,43 @@
+#include "mt7620a_kroks.dtsi"
+#include "flash_kroks_16m.dtsi"
+
+#include <dt-bindings/input/input.h>
+#include <dt-bindings/gpio/gpio.h>
+
+/ {
+	keys {
+		compatible = "gpio-keys";
+
+		reset {
+			label = "reset";
+			gpios = <&gpio0 0 GPIO_ACTIVE_HIGH>;
+			linux,code = <KEY_RESTART>;
+		};
+	};
+
+	gpio_export {
+		compatible = "gpio-export";
+		#size-cells = <0>;
+
+		modem1reset {
+			gpio-export,name = "modem1reset";
+			gpio-export,output = <1>;
+			gpios = <&gpio1 12 GPIO_ACTIVE_HIGH>;
+		};
+	};
+};
+
+&state_default {
+	gpio {
+		ralink,group = "pcie";
+		ralink,function = "gpio";
+	};
+};
+
+&ethernet {
+	mediatek,portmap = "wllll";
+};
+
+&wmac {
+	status = "disabled";
+};

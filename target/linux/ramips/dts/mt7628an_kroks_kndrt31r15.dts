@@ -1,0 +1,79 @@
+#include "mt7628an_kroks_1eth.dtsi"
+
+/ {
+	compatible = "kroks,kndrt31r15", "mediatek,mt7628an-soc";
+	model = "Kroks KNdRt31R15";
+
+	aliases {
+		led-boot = &led_status;
+		led-failsafe = &led_status;
+		led-running = &led_status;
+		led-upgrade = &led_status;
+		serial1 = &uart1;
+	};
+
+	leds {
+		compatible = "gpio-leds";
+
+		led_status: status {
+			label = "kndrt31r15:led:status";
+			gpios = <&gpio0 2 GPIO_ACTIVE_LOW>;
+		};
+
+		wifi {
+			label = "kndrt31r15:led:wifi";
+			gpios = <&gpio1 12 GPIO_ACTIVE_LOW>;
+			linux,default-trigger = "phy0tpt";
+		};
+	};
+
+	gpio_export {
+		compatible = "gpio-export";
+		#size-cells = <0>;
+
+		modem1power {
+			gpio-export,name = "modem1power";
+			gpio-export,output = <0>;
+			gpios = <&gpio0 1 GPIO_ACTIVE_LOW>;
+		};
+
+		modem1sim1 {
+			gpio-export,name = "modem1sim1";
+			gpio-export,output = <0>;
+			gpios = <&gpio0 3 GPIO_ACTIVE_HIGH>;
+		};
+
+		modem1sim2 {
+			gpio-export,name = "modem1sim2";
+			gpio-export,output = <0>;
+			gpios = <&gpio0 4 GPIO_ACTIVE_HIGH>;
+		};
+
+		modem1rsim1 {
+			gpio-export,name = "modem1rsim1";
+			gpio-export,output = <1>;
+			gpios = <&gpio1 7 GPIO_ACTIVE_HIGH>;
+		};
+
+		modem1rsim2 {
+			gpio-export,name = "modem1rsim2";
+			gpio-export,output = <0>;
+			gpios = <&gpio1 8 GPIO_ACTIVE_HIGH>;
+		};
+	};
+};
+
+&uart1 {
+	status = "okay";
+};
+
+&state_default {
+	gpio {
+		ralink,group = "i2s", "i2c", "p4led_an", "p3led_an", "wled_an";
+		ralink,function = "gpio";
+	};
+};
+
+&wmac {
+	status = "disabled";
+};

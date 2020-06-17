@@ -1,0 +1,51 @@
+#include "mt7620a_kroks.dtsi"
+#include "flash_kroks_16m.dtsi"
+
+#include <dt-bindings/input/input.h>
+#include <dt-bindings/gpio/gpio.h>
+
+/ {
+	compatible = "kroks,ap223", "ralink,mt7620a-soc";
+	model = "Kroks AP223";
+
+	leds {
+		compatible = "gpio-leds";
+
+		wan {
+			label = "ap223:led:wan";
+			gpios = <&gpio2 0 GPIO_ACTIVE_LOW>;
+		};
+
+		lan {
+			label = "ap223:led:lan";
+			gpios = <&gpio2 1 GPIO_ACTIVE_LOW>;
+		};
+
+		wifi {
+			label = "ap223:led:wifi";
+			gpios = <&gpio3 0 GPIO_ACTIVE_LOW>;
+			linux,default-trigger = "phy0tpt";
+		};
+	};
+
+	keys {
+		compatible = "gpio-keys";
+
+		reset {
+			label = "reset";
+			gpios = <&gpio0 0 GPIO_ACTIVE_HIGH>;
+			linux,code = <KEY_RESTART>;
+		};
+	};
+};
+
+&state_default {
+	gpio {
+		ralink,group = "ephy", "wled";
+		ralink,function = "gpio";
+	};
+};
+
+&ethernet {
+	mediatek,portmap = "wllll";
+};

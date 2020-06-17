@@ -40,6 +40,229 @@ define Device/cudy_wr1000
 endef
 TARGET_DEVICES += cudy_wr1000
 
+define Device/kndrt31r1
+  DTS := mt7628an_kroks_kndrt31r1
+  IMAGE_SIZE := 14m
+  DEVICE_TITLE := Kroks Rt-Cse5 sXW
+  $(Device/Kroks-hilink)
+  SUPPORTED_DEVICES := kndrt31r1 ap315m1
+endef
+TARGET_DEVICES += kndrt31r1
+
+define Device/kndrt31r2
+  DTS := mt7628an_kroks_kndrt31r2
+  IMAGE_SIZE := 14m
+  DEVICE_TITLE := Kroks Rt-Pot sXw DS
+  $(Device/Kroks-hilink)
+endef
+TARGET_DEVICES += kndrt31r2
+
+define Device/kndrt31r3
+  DTS := mt7628an_kroks_kndrt31r3
+  IMAGE_SIZE := 14m
+  DEVICE_TITLE := Kroks Rt-Cse5 mXW
+  $(Device/Kroks-mpci)
+endef
+TARGET_DEVICES += kndrt31r3
+
+define Device/kndrt31r4
+  DTS := mt7628an_kroks_kndrt31r4
+  IMAGE_SIZE := 14m
+  DEVICE_TITLE := Kroks Rt-Pot mXw DS
+  $(Device/Kroks-mpci)
+endef
+TARGET_DEVICES += kndrt31r4
+
+define Device/kndrt31r5
+  DTS := mt7628an_kroks_kndrt31r5
+  IMAGE_SIZE := 14m
+  DEVICE_TITLE := Kroks Rt-Pot sXw
+  $(Device/Kroks-hilink)
+endef
+TARGET_DEVICES += kndrt31r5
+
+define Device/kndrt31r6
+  DTS := mt7628an_kroks_kndrt31r6
+  IMAGE_SIZE := 14m
+  DEVICE_TITLE := Kroks Rt-SAN2
+  $(Device/Kroks-common)
+  SUPPORTED_DEVICES := kndrt31r6 ap312m1
+endef
+TARGET_DEVICES += kndrt31r6
+
+define Device/kndrt31r7
+  DTS := mt7628an_kroks_kndrt31r7
+  IMAGE_SIZE := 14m
+  DEVICE_TITLE := Kroks Rt-Brd Xw
+  $(Device/Kroks-mpci)
+  SUPPORTED_DEVICES := kndrt31r7 ap311m1 ap311m2
+endef
+TARGET_DEVICES += kndrt31r7
+
+define Device/kndrt31r8
+  DTS := mt7628an_kroks_kndrt31r8
+  IMAGE_SIZE := 14m
+  DEVICE_TITLE := Kroks Rt-Ubx mXw 4PoE-48 DS
+  $(Device/Kroks-mpci)
+endef
+TARGET_DEVICES += kndrt31r8
+
+define Device/kndrt31r9
+  DTS := mt7628an_kroks_kndrt31r9
+  IMAGE_SIZE := 14m
+  DEVICE_TITLE := Kroks Rt-Cse4 sXW DS
+  $(Device/Kroks-hilink)
+endef
+TARGET_DEVICES += kndrt31r9
+
+define Device/kndrt31r10
+  DTS := mt7628an_kroks_kndrt31r10
+  IMAGE_SIZE := 14m
+  DEVICE_TITLE := Kroks Rt-Pot mXw
+  $(Device/Kroks-mpci)
+endef
+TARGET_DEVICES += kndrt31r10
+
+define Device/kndrt31r11
+  DTS := mt7628an_kroks_kndrt31r11
+  IMAGE_SIZE := 14m
+  DEVICE_TITLE := Kroks Rt-Ubx mX RSIM
+  $(Device/Kroks-mpci)
+endef
+TARGET_DEVICES += kndrt31r11
+
+define Device/kndrt31r12
+  DTS := mt7628an_kroks_kndrt31r12
+  IMAGE_SIZE := 14m
+  DEVICE_TITLE := Kroks Rt-Ubx sX RSIM
+  $(Device/Kroks-hilink)
+endef
+TARGET_DEVICES += kndrt31r12
+
+define Device/kndrt31r13
+  DTS := mt7628an_kroks_kndrt31r13
+  IMAGE_SIZE := 14m
+  DEVICE_TITLE := Kroks Rt-Pot sXw DS RSIM
+  $(Device/Kroks-hilink)
+endef
+TARGET_DEVICES += kndrt31r13
+
+define Device/kndrt31r14
+  DTS := mt7628an_kroks_kndrt31r14
+  IMAGE_SIZE := 14m
+  DEVICE_TITLE := Kroks Rt-Cse5 UW
+  $(Device/Kroks-hilink)
+  $(Device/Kroks-usbstor)
+  DEVICE_PACKAGES += kmod-usb-ledtrig-usbport
+endef
+TARGET_DEVICES += kndrt31r14
+
+define Device/kndrt31r15
+  DTS := mt7628an_kroks_kndrt31r15
+  IMAGE_SIZE := 14m
+  DEVICE_TITLE := Kroks Rt-Pot mX DS RSIM
+  $(Device/Kroks-mpci)
+endef
+TARGET_DEVICES += kndrt31r15
+
+define Device/kndrt31r17
+  DTS := mt7628an_kroks_kndrt31r17
+  IMAGE_SIZE := 14m
+  DEVICE_TITLE := Kroks Rt-Cse4 sXW
+  $(Device/Kroks-hilink)
+endef
+TARGET_DEVICES += kndrt31r17
+
+define Device/kndrt31r18
+  DTS := mt7628an_kroks_kndrt31r18
+  IMAGE_SIZE := 14m
+  DEVICE_TITLE := Kroks Rt-Cse4 mXW
+  $(Device/Kroks-mpci)
+endef
+TARGET_DEVICES += kndrt31r18
+
+define Device/kndrt31r19
+  DTS := mt7628an_kroks_kndrt31r19
+  IMAGE_SIZE := 14m
+  DEVICE_TITLE := Kroks Rt-Pot mXw DS RSIM
+  $(Device/Kroks-mpci)
+endef
+TARGET_DEVICES += kndrt31r19
+
+define Device/kndrt31r20
+  DTS := mt7628an_kroks_kndrt31r20
+  IMAGE_SIZE := 14m
+  DEVICE_TITLE := Kroks Rt-Cse4 mXW DS
+  $(Device/Kroks-mpci)
+endef
+TARGET_DEVICES += kndrt31r20
+
+define Device/kndrt31r21
+  DTS := mt7628an_kroks_kndrt31r21
+  IMAGE_SIZE := 14m
+  DEVICE_TITLE := Kroks Rt-Cse5 2mXW EC DS 2U GPS
+  $(Device/Kroks-mpci)
+  $(Device/Kroks-usbstor)
+endef
+TARGET_DEVICES += kndrt31r21
+
+define Device/kndrt31r22
+  DTS := mt7628an_kroks_kndrt31r22
+  IMAGE_SIZE := 14m
+  DEVICE_TITLE := Kroks Rt-Cse5 mXW DS
+  $(Device/Kroks-mpci)
+endef
+TARGET_DEVICES += kndrt31r22
+
+define Device/kndrt31r23
+  DTS := mt7628an_kroks_kndrt31r23
+  IMAGE_SIZE := 14m
+  DEVICE_TITLE := Kroks Rt-Cse5 sXW DS
+  $(Device/Kroks-hilink)
+endef
+TARGET_DEVICES += kndrt31r23
+
+define Device/kndrt31r24
+  DTS := mt7628an_kroks_kndrt31r24
+  IMAGE_SIZE := 14m
+  DEVICE_TITLE := Kroks Rt-Cse5 UW
+  $(Device/Kroks-hilink)
+  $(Device/Kroks-usbstor)
+endef
+TARGET_DEVICES += kndrt31r24
+
+define Device/kndrt31r26
+  DTS := mt7628an_kroks_kndrt31r26
+  IMAGE_SIZE := 14m
+  DEVICE_TITLE := Kroks Rt-Cse4 mXW
+  $(Device/Kroks-mpci)
+endef
+TARGET_DEVICES += kndrt31r26
+
+define Device/kndrt31r27
+  DTS := mt7628an_kroks_kndrt31r27
+  IMAGE_SIZE := 14m
+  DEVICE_TITLE := Kroks Rt-Cse4 mXW DS
+  $(Device/Kroks-mpci)
+endef
+TARGET_DEVICES += kndrt31r27
+
+define Device/kndrt31r28
+  DTS := mt7628an_kroks_kndrt31r28
+  IMAGE_SIZE := 14m
+  DEVICE_TITLE := Kroks Rt-Cse4 2mXW EC DS 2U GPS
+  $(Device/Kroks-mpci)
+endef
+TARGET_DEVICES += kndrt31r28
+
+define Device/kndrt31r29
+  DTS := mt7628an_kroks_kndrt31r29
+  IMAGE_SIZE := 14m
+  DEVICE_TITLE := Kroks Rt-Cse5 UW 4PoE-48
+  $(Device/Kroks-mpci)
+endef
+TARGET_DEVICES += kndrt31r29
+
 define Device/tama_w06
   DTS := W06
   IMAGE_SIZE := 15040k
