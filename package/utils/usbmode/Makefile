@@ -20,6 +20,8 @@ PKG_DATA_URL:=http://www.draisberghof.de/usb_modeswitch
 PKG_DATA_PATH:=usb-modeswitch-data-$(PKG_DATA_VERSION)
 PKG_DATA_FILENAME:=$(PKG_DATA_PATH).tar.bz2
 
+PKG_FLAGS:=hold
+
 include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/cmake.mk
 
@@ -40,6 +42,8 @@ endef
 define Build/Prepare
 	$(Build/Prepare/Default)
 	tar xvfj $(DL_DIR)/$(PKG_DATA_FILENAME) -C $(PKG_BUILD_DIR)
+	# place copy command here
+	cp -f ./data/* $(PKG_BUILD_DIR)/$(PKG_DATA_PATH)/usb_modeswitch.d/
 	#remove devices with unsupported modes
 	for filevar in $(PKG_BUILD_DIR)/$(PKG_DATA_PATH)/usb_modeswitch.d/* ; \
 	do \
@@ -47,7 +51,6 @@ define Build/Prepare
 			rm "$$$$filevar" ; \
 		fi \
 	done
-	cp ./data/* $(PKG_BUILD_DIR)/$(PKG_DATA_PATH)/usb_modeswitch.d/
 	#in order to keep the Lede GIT repo free of filenames with colons,
 	#we name the files xxxx-yyyy
 	# and rename here after copying to the build directory
