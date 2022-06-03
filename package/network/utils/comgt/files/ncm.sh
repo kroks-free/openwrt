@@ -89,14 +89,18 @@ proto_ncm_setup() {
 		return 1
 	}
 
-	json_get_values initialize initialize
-	for i in $initialize; do
-		eval COMMAND="$i" gcom -d "$device" -s /etc/gcom/runcommand.gcom || {
-			echo "Failed to initialize modem"
-			proto_notify_error "$interface" INITIALIZE_FAILED
-			return 1
-		}
-	done
+	json_select initialize &> /dev/null && {
+		json_get_keys keys
+		for k in $keys; do
+			json_get_var i "$k"
+			eval COMMAND="$i" gcom -d "$device" -s /etc/gcom/runcommand.gcom || {
+				echo "Failed to initialize modem"
+				proto_notify_error "$interface" INITIALIZE_FAILED
+				return 1
+			}
+		done
+		json_select ..
+	}
 
 	[ -n "$pincode" ] && {
 		PINCODE="$pincode" gcom -d "$device" -s /etc/gcom/setpin.gcom || {
@@ -107,15 +111,19 @@ proto_ncm_setup() {
 		}
 	}
 
-	json_get_values configure configure
 	echo "Configuring modem"
-	for i in $configure; do
-		eval COMMAND="$i" gcom -d "$device" -s /etc/gcom/runcommand.gcom || {
-			echo "Failed to configure modem"
-			proto_notify_error "$interface" CONFIGURE_FAILED
-			return 1
-		}
-	done
+	json_select configure &> /dev/null && {
+		json_get_keys keys
+		for k in $keys; do
+			json_get_var i "$k"
+			eval COMMAND="$i" gcom -d "$device" -s /etc/gcom/runcommand.gcom || {
+				echo "Failed to configure modem"
+				proto_notify_error "$interface" CONFIGURE_FAILED
+				return 1
+			}
+		done
+		json_select ..
+	}
 
 	[ -n "$mode" ] && {
 		json_select modes
