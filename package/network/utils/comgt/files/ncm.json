@@ -1,4 +1,29 @@
 {
+	"quectel": {
+		"initialize": [
+			"AT",
+			"ATZ",
+			"ATQ0",
+			"ATV1",
+			"ATE1",
+			"ATS0=0",
+			"AT+CGDCONT=${profile},\\\"${pdptype}\\\"${apn:+,\\\"$apn\\\"}"
+		],
+		"modes": {
+			"preferumts": "AT+QCFG=\\\"nwscanseq\\\",5",
+			"prefergsm": "AT+QCFG=\\\"nwscanseq\\\",4",
+			"lte": "AT+QCFG=\\\"nwscanseq\\\",3",
+			"umts": "AT+QCFG=\\\"nwscanseq\\\",2",
+			"gsm": "AT+QCFG=\\\"nwscanseq\\\",1",
+			"auto": "AT+QCFG=\\\"nwscanseq\\\",0"
+		},
+		"configure": [
+			"AT+QICSGP=${profile},$(echo ${pdptype}|sed 's|IPV4V6|3|g;s|IPV6|2|g;s|IP|1|g;')${apn:+,\\\"$apn\\\"}${username:+,\\\"$username\\\"}${password:+,\\\"$password\\\"}${auth:+,3}"
+		],
+		"connect": "AT+QIACT=${profile}",
+		"finalize": "AT+QNETDEVCTL=1,${profile}",
+		"disconnect": "AT+QIDEACT=${profile}"
+	},
 	"huawei": {
 		"initialize": [
 			"AT",
