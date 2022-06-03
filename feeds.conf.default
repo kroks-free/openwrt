@@ -1,4 +1,4 @@
-src-git packages https://git.openwrt.org/feed/packages.git^ef7746c5e9ffc9ba128c4cf76e9e22fb52872f7a
-src-git luci https://git.openwrt.org/project/luci.git^edc454743e333d836a1e13fdc51149336d68ae18
-src-git routing https://git.openwrt.org/feed/routing.git^840c78036b6400f5f203f75f0e0f43c0154c6773
-src-git telephony https://git.openwrt.org/feed/telephony.git^92892fa285360b8981f62bf4e0a097e6449e7e33
+src-git packages https://github.com/kroks-free/packages.git;kroks_v24.10.6
+src-git luci https://github.com/kroks-free/luci.git;kroks_v24.10.6
+src-git routing https://github.com/kroks-free/routing.git;kroks_v24.10.6
+src-git telephony https://github.com/kroks-free/telephony.git;kroks_v24.10.6
