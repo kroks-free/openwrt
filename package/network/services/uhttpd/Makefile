@@ -22,6 +22,8 @@ PKG_ASLR_PIE_REGULAR:=1
 PKG_BUILD_DEPENDS = ustream-ssl
 PKG_CONFIG_DEPENDS:= CONFIG_uhttpd_lua
 
+PKG_FLAGS:=hold
+
 include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/cmake.mk
 include $(INCLUDE_DIR)/version.mk
