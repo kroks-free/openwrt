@@ -1,0 +1,63 @@
+#include "mt7628an_kroks.dtsi"
+#include "flash_kroks_16m.dtsi"
+
+#include <dt-bindings/input/input.h>
+#include <dt-bindings/gpio/gpio.h>
+
+/ {
+	compatible = "kroks,kndrt31r6", "mediatek,mt7628an-soc";
+	model = "Kroks KNdRt31R6";
+
+	aliases {
+		led-boot = &led_status;
+		led-failsafe = &led_status;
+		led-running = &led_status;
+		led-upgrade = &led_status;
+	};
+
+	leds {
+		compatible = "gpio-leds";
+
+		led_status: status {
+			label = "led:status";
+			gpios = <&gpio 2 GPIO_ACTIVE_LOW>;
+		};
+
+		wifi {
+			label = "led:wifi";
+			gpios = <&gpio 44 GPIO_ACTIVE_LOW>;
+			linux,default-trigger = "phy0tpt";
+		};
+	};
+
+	keys {
+		compatible = "gpio-keys";
+
+		reset {
+			label = "reset";
+			gpios = <&gpio 38 GPIO_ACTIVE_LOW>;
+			linux,code = <KEY_RESTART>;
+		};
+	};
+};
+
+&esw {
+	mediatek,portmap = <0x3e>;
+};
+
+&state_default {
+	gpio {
+		groups = "i2s", "wdt", "wled_an";
+		function = "gpio";
+	};
+
+	p0led_an {
+		groups = "p0led_an";
+		function = "p0led_an";
+	};
+
+	p1led_an {
+		groups = "p1led_an";
+		function = "p1led_an";
+	};
+};

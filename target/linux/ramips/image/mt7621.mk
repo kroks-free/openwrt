@@ -95,6 +95,29 @@ define Device/dsa-migration
   DEVICE_COMPAT_MESSAGE := Config cannot be migrated from swconfig to DSA
 endef
 
+define Device/kroks_kndrt41r1
+  $(Device/dsa-migration)
+  IMAGE_SIZE := 30m
+  DEVICE_VENDOR := Kroks
+  DEVICE_MODEL := Rt-Cse4 mXUW DS G
+  $(Device/Kroks-mpci)
+  $(Device/Kroks-usbstor)
+  DEVICE_PACKAGES += kmod-usb3 kmod-mt7603 kmod-mt7615e kmod-mt7663-firmware-ap
+  SUPPORTED_DEVICES += kndrt41r1
+endef
+TARGET_DEVICES += kroks_kndrt41r1
+
+define Device/kroks_kndrt41r2
+  $(Device/dsa-migration)
+  IMAGE_SIZE := 30m
+  DEVICE_VENDOR := Kroks
+  DEVICE_MODEL := Rt-Pot mXw DS RSIM G
+  $(Device/Kroks-mpci)
+  DEVICE_PACKAGES += kmod-usb3 kmod-mt7603 kmod-mt7615e kmod-mt7663-firmware-ap
+  SUPPORTED_DEVICES += kndrt41r2
+endef
+TARGET_DEVICES += kroks_kndrt41r2
+
 define Device/adslr_g7
   $(Device/dsa-migration)
   IMAGE_SIZE := 16064k

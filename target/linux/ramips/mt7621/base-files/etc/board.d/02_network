@@ -4,6 +4,20 @@
 . /lib/functions/uci-defaults.sh
 . /lib/functions/system.sh
 
+kroks_setup_network()
+{
+	local board="$1"
+
+	case "$board" in
+	kndrt41r1)
+		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3" "wan"
+		;;
+	kndrt41r2)
+		ucidef_set_interface_lan "lan1 lan2"
+		;;
+	esac
+}
+
 ramips_setup_interfaces()
 {
 	local board="$1"
@@ -74,6 +88,9 @@ ramips_setup_interfaces()
 	zyxel,wap6805)
 		ucidef_set_interface_lan "lan1 lan2 lan3 lan4"
 		ucidef_set_interface "qtn" ifname "eth1" protocol "static" ipaddr "1.1.1.1" netmask "255.255.255.0"
+		;;
+	kroks,*)
+		kroks_setup_network "${board##*,}"
 		;;
 	*)
 		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3 lan4" "wan"

@@ -4,6 +4,60 @@
 . /lib/functions/uci-defaults.sh
 . /lib/functions/system.sh
 
+kroks_setup_network()
+{
+	local board="$1"
+
+	case "$board" in
+	kndrt31r3|\
+	kndrt31r8|\
+	kndrt31r21|\
+	kndrt31r22|\
+	kndrt31r24)
+		ucidef_add_switch "switch0" \
+			"1:lan" "2:lan" "3:lan" "4:lan" "0:wan" "6@eth0"
+		;;
+	kndrt31r4|\
+	kndrt31r10|\
+	kndrt31r11|\
+	kndrt31r15|\
+	kndrt31r19|\
+	kndrt31r30)
+		ucidef_add_switch "switch0" \
+			"0:lan" "6@eth0"
+		;;
+	kndrt31r6)
+		ucidef_add_switch "switch0" \
+			"1:lan" "0:wan" "6@eth0"
+		;;
+	kndrt31r7)
+		ucidef_add_switch "switch0" \
+			"0:lan" "6@eth0"
+		ucidef_set_interface "modem1hilink" device "eth1" protocol "dhcp"
+		;;
+	kndrt31r18|\
+	kndrt31r20)
+		ucidef_add_switch "switch0" \
+			"1:lan" "2:lan" "3:lan" "0:wan" "6@eth0"
+		;;
+	kndrt31r26|\
+	kndrt31r27|\
+	kndrt31r28)
+		ucidef_add_switch "switch0" \
+			"1:lan:3" "2:lan:2" "3:lan:1" "4:wan" "6@eth0"
+		;;
+	kndrt31r29)
+		ucidef_add_switch "switch0" \
+			"1:lan" "2:lan" "3:lan" "4:lan" "0:wan" "6@eth0"
+		ucidef_set_interface "modem1hilink" device "eth1" protocol "dhcp"
+		;;
+	kndrt31r31)
+		ucidef_add_switch "switch0" \
+			"3:lan:2" "4:lan:1" "6@eth0"
+		;;
+	esac
+}
+
 ramips_setup_interfaces()
 {
 	local board="$1"
@@ -155,6 +209,9 @@ ramips_setup_interfaces()
 		ucidef_add_switch "switch0" \
 			"0:lan:2" "1:lan:1" "4:wan" "6@eth0"
 		;;
+	kroks,*)
+		kroks_setup_network "${board##*,}"
+		;;
 	esac
 }
 
@@ -177,6 +234,9 @@ ramips_setup_macs()
 	wavlink,wl-wn577a2)
 		wan_mac=$(mtd_get_mac_binary factory 0x2e)
 		label_mac=$(mtd_get_mac_binary factory 0x4)
+		;;
+	kroks,*)
+		wan_mac=$(macaddr_add "$(mtd_get_mac_binary factory 0x4)" 1)
 		;;
 	duzun,dm06|\
 	netgear,r6020|\

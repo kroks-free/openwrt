@@ -28,6 +28,188 @@ define Build/ravpower-wd009-factory
 	@mv $@.new $@
 endef
 
+define Device/kroks_kndrt31r3
+  IMAGE_SIZE := 14m
+  DEVICE_VENDOR := Kroks
+  DEVICE_MODEL := Rt-Cse5 mXW
+  $(Device/Kroks-mpci)
+  SUPPORTED_DEVICES += kndrt31r3
+endef
+TARGET_DEVICES += kroks_kndrt31r3
+
+define Device/kroks_kndrt31r4
+  IMAGE_SIZE := 14m
+  DEVICE_VENDOR := Kroks
+  DEVICE_MODEL := Rt-Pot mXw DS
+  $(Device/Kroks-mpci)
+  SUPPORTED_DEVICES += kndrt31r4
+endef
+TARGET_DEVICES += kroks_kndrt31r4
+
+define Device/kroks_kndrt31r6
+  IMAGE_SIZE := 14m
+  DEVICE_VENDOR := Kroks
+  DEVICE_MODEL := Rt-SAN2
+  SUPPORTED_DEVICES += kndrt31r6 ap312m1
+endef
+TARGET_DEVICES += kroks_kndrt31r6
+
+define Device/kroks_kndrt31r7
+  IMAGE_SIZE := 14m
+  DEVICE_VENDOR := Kroks
+  DEVICE_MODEL := Rt-Brd Xw
+  $(Device/Kroks-mpci)
+  SUPPORTED_DEVICES += kndrt31r7 ap311m1 ap311m2
+endef
+TARGET_DEVICES += kroks_kndrt31r7
+
+define Device/kroks_kndrt31r8
+  IMAGE_SIZE := 14m
+  DEVICE_VENDOR := Kroks
+  DEVICE_MODEL := Rt-Ubx mXw 4PoE-48 DS
+  $(Device/Kroks-mpci)
+  SUPPORTED_DEVICES += kndrt31r8
+endef
+TARGET_DEVICES += kroks_kndrt31r8
+
+define Device/kroks_kndrt31r10
+  IMAGE_SIZE := 14m
+  DEVICE_VENDOR := Kroks
+  DEVICE_MODEL := Rt-Pot mXw
+  $(Device/Kroks-mpci)
+  SUPPORTED_DEVICES += kndrt31r10
+endef
+TARGET_DEVICES += kroks_kndrt31r10
+
+define Device/kroks_kndrt31r11
+  IMAGE_SIZE := 14m
+  DEVICE_VENDOR := Kroks
+  DEVICE_MODEL := Rt-Ubx mX RSIM
+  $(Device/Kroks-mpci)
+  SUPPORTED_DEVICES += kndrt31r11
+endef
+TARGET_DEVICES += kroks_kndrt31r11
+
+define Device/kroks_kndrt31r15
+  IMAGE_SIZE := 14m
+  DEVICE_VENDOR := Kroks
+  DEVICE_MODEL := Rt-Pot mX DS RSIM
+  $(Device/Kroks-mpci)
+  SUPPORTED_DEVICES += kndrt31r15
+endef
+TARGET_DEVICES += kroks_kndrt31r15
+
+define Device/kroks_kndrt31r18
+  IMAGE_SIZE := 14m
+  DEVICE_VENDOR := Kroks
+  DEVICE_MODEL := Rt-Cse4 mXW Old
+  $(Device/Kroks-mpci)
+  SUPPORTED_DEVICES += kndrt31r18
+endef
+TARGET_DEVICES += kroks_kndrt31r18
+
+define Device/kroks_kndrt31r19
+  IMAGE_SIZE := 14m
+  DEVICE_VENDOR := Kroks
+  DEVICE_MODEL := Rt-Pot mXw DS RSIM
+  $(Device/Kroks-mpci)
+  SUPPORTED_DEVICES += kndrt31r19
+endef
+TARGET_DEVICES += kroks_kndrt31r19
+
+define Device/kroks_kndrt31r20
+  IMAGE_SIZE := 14m
+  DEVICE_VENDOR := Kroks
+  DEVICE_MODEL := Rt-Cse4 mXW DS Old
+  $(Device/Kroks-mpci)
+  SUPPORTED_DEVICES += kndrt31r20
+endef
+TARGET_DEVICES += kroks_kndrt31r20
+
+define Device/kroks_kndrt31r21
+  IMAGE_SIZE := 14m
+  DEVICE_VENDOR := Kroks
+  DEVICE_MODEL := Rt-Cse5 2mXW EC DS 2U GPS
+  $(Device/Kroks-mpci)
+  $(Device/Kroks-usbstor)
+  SUPPORTED_DEVICES += kndrt31r21
+endef
+TARGET_DEVICES += kroks_kndrt31r21
+
+define Device/kroks_kndrt31r22
+  IMAGE_SIZE := 14m
+  DEVICE_VENDOR := Kroks
+  DEVICE_MODEL := Rt-Cse5 mXW DS
+  $(Device/Kroks-mpci)
+  SUPPORTED_DEVICES += kndrt31r22
+endef
+TARGET_DEVICES += kroks_kndrt31r22
+
+define Device/kroks_kndrt31r24
+  IMAGE_SIZE := 14m
+  DEVICE_VENDOR := Kroks
+  DEVICE_MODEL := Rt-Cse5 UW
+  $(Device/Kroks-hilink)
+  $(Device/Kroks-usbstor)
+  SUPPORTED_DEVICES += kndrt31r24
+endef
+TARGET_DEVICES += kroks_kndrt31r24
+
+define Device/kroks_kndrt31r26
+  IMAGE_SIZE := 14m
+  DEVICE_VENDOR := Kroks
+  DEVICE_MODEL := Rt-Cse4 mXW
+  $(Device/Kroks-mpci)
+  SUPPORTED_DEVICES += kndrt31r26
+endef
+TARGET_DEVICES += kroks_kndrt31r26
+
+define Device/kroks_kndrt31r27
+  IMAGE_SIZE := 14m
+  DEVICE_VENDOR := Kroks
+  DEVICE_MODEL := Rt-Cse4 mXW DS
+  $(Device/Kroks-mpci)
+  SUPPORTED_DEVICES += kndrt31r27
+endef
+TARGET_DEVICES += kroks_kndrt31r27
+
+define Device/kroks_kndrt31r28
+  IMAGE_SIZE := 14m
+  DEVICE_VENDOR := Kroks
+  DEVICE_MODEL := Rt-Cse4 2mXUW EC DS
+  $(Device/Kroks-mpci)
+  $(Device/Kroks-usbstor)
+  SUPPORTED_DEVICES += kndrt31r28
+endef
+TARGET_DEVICES += kroks_kndrt31r28
+
+define Device/kroks_kndrt31r29
+  IMAGE_SIZE := 14m
+  DEVICE_VENDOR := Kroks
+  DEVICE_MODEL := Rt-Cse5 UW 4PoE-48
+  $(Device/Kroks-mpci)
+  $(Device/Kroks-usbstor)
+  SUPPORTED_DEVICES += kndrt31r29
+endef
+TARGET_DEVICES += kroks_kndrt31r29
+
+define Device/kroks_kndrt31r30
+  IMAGE_SIZE := 14m
+  DEVICE_VENDOR := Kroks
+  DEVICE_MODEL := Rt-Pot mX DS
+  $(Device/Kroks-mpci)
+  SUPPORTED_DEVICES += kndrt31r30
+endef
+TARGET_DEVICES += kroks_kndrt31r30
+
+define Device/kroks_kndrt31r31
+  IMAGE_SIZE := 14m
+  DEVICE_VENDOR := Kroks
+  DEVICE_MODEL := Rt-Ubx 2mX EC DS
+  $(Device/Kroks-mpci)
+  SUPPORTED_DEVICES += kndrt31r31
+endef
+TARGET_DEVICES += kroks_kndrt31r31
 
 define Device/alfa-network_awusfree1
   IMAGE_SIZE := 7872k
