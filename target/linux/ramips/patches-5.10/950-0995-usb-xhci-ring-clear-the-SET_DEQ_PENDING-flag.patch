@@ -1,0 +1,44 @@
+From 8c23d54d341c7584928f35b5f276db45b85f3d91 Mon Sep 17 00:00:00 2001
+From: Jonathan Bell <jonathan@raspberrypi.com>
+Date: Thu, 22 Sep 2022 13:35:04 +0300
+Subject: [PATCH] usb: xhci-ring: clear the SET_DEQ_PENDING flag
+
+An unknown unsafe memory access can result in the
+ep_state variable in xhci_virt_ep being trampled with a stuck
+SET_DEQ_PENDING state despite successful completion of a
+Set TR Deq Pointer command.
+
+All URB enqueue/dequeue calls for the endpoint will fail in this state
+so no transfers are possible until the device is reconnected.
+
+As a workaround, clear the flag if we see it set and issue a new Set
+TR Deq command anyway - this should be harmless, as a prior Set TR Deq
+command will only have been issued in the Stopped state, and if the
+endpoint is Running then the controller is required to ignore it and
+respond with a Context State Error event TRB.
+
+BugLink: https://bugs.launchpad.net/bugs/1930629
+See https://github.com/raspberrypi/linux/issues/3981
+---
+ drivers/usb/host/xhci-ring.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/usb/host/xhci-ring.c b/drivers/usb/host/xhci-ring.c
+index fa3a7ac15f82..cc479ba63178 100644
+--- a/drivers/usb/host/xhci-ring.c
++++ b/drivers/usb/host/xhci-ring.c
+@@ -4260,9 +4260,9 @@ void xhci_queue_new_dequeue_state(struct xhci_hcd *xhci,
+ 	}
+ 	ep = &xhci->devs[slot_id]->eps[ep_index];
+ 	if ((ep->ep_state & SET_DEQ_PENDING)) {
+-		xhci_warn(xhci, "WARN Cannot submit Set TR Deq Ptr\n");
+-		xhci_warn(xhci, "A Set TR Deq Ptr command is pending.\n");
+-		return;
++		xhci_warn(xhci, "WARN A Set TR Deq Ptr command is pending for slot %u ep %u\n",
++			  slot_id, ep_index);
++		ep->ep_state &= ~SET_DEQ_PENDING;
+ 	}
+ 
+ 	/* This function gets called from contexts where it cannot sleep */
+-- 
+2.37.3
