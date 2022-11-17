@@ -3,6 +3,7 @@
 #
 
 include ./common-tp-link.mk
+include ./common-kroks.mk
 
 DEFAULT_SOC := mt7621
 
@@ -1013,6 +1014,78 @@ define Device/jcg_y2
   DEVICE_PACKAGES := kmod-mt7615e kmod-mt7615-firmware kmod-usb3
 endef
 TARGET_DEVICES += jcg_y2
+
+define Device/kroks_kndrt41r1
+  $(Device/dsa-migration)
+  $(Device/uimage-lzma-loader)
+  IMAGE_SIZE := 30m
+  DEVICE_VENDOR := Kroks
+  DEVICE_MODEL := Rt-Cse4 mXUW DS G
+  $(Device/Kroks-mpci)
+  $(Device/Kroks-usbstor)
+  DEVICE_PACKAGES += kmod-usb3 kmod-mt7603 kmod-mt7615e kmod-mt7663-firmware-ap
+  SUPPORTED_DEVICES += kndrt41r1
+endef
+TARGET_DEVICES += kroks_kndrt41r1
+
+define Device/kroks_kndrt41r2
+  $(Device/dsa-migration)
+  $(Device/uimage-lzma-loader)
+  IMAGE_SIZE := 30m
+  DEVICE_VENDOR := Kroks
+  DEVICE_MODEL := Rt-Pot mXw DS RSIM G
+  $(Device/Kroks-mpci)
+  DEVICE_PACKAGES += kmod-usb3 kmod-mt7603 kmod-mt7615e kmod-mt7663-firmware-ap
+  SUPPORTED_DEVICES += kndrt41r2
+endef
+TARGET_DEVICES += kroks_kndrt41r2
+
+define Device/kroks_kndrt41r3
+  $(Device/dsa-migration)
+  $(Device/uimage-lzma-loader)
+  IMAGE_SIZE := 30m
+  DEVICE_VENDOR := Kroks
+  DEVICE_MODEL := Rt-Cse4 UW G
+  $(Device/Kroks-usbstor)
+  DEVICE_PACKAGES += kmod-usb3 kmod-mt7603 kmod-mt7615e kmod-mt7663-firmware-ap
+  SUPPORTED_DEVICES += kndrt41r3
+endef
+TARGET_DEVICES += kroks_kndrt41r3
+
+define Device/kroks_kndrt41r4
+  $(Device/dsa-migration)
+  $(Device/uimage-lzma-loader)
+  IMAGE_SIZE := 30m
+  DEVICE_VENDOR := Kroks
+  DEVICE_MODEL := Rt-Pot mXw DS G
+  $(Device/Kroks-mpci)
+  DEVICE_PACKAGES += kmod-usb3 kmod-mt7603 kmod-mt7615e kmod-mt7663-firmware-ap
+  SUPPORTED_DEVICES += kndrt41r4
+endef
+TARGET_DEVICES += kroks_kndrt41r4
+
+define Device/kroks_kndrt41r5
+  $(Device/dsa-migration)
+  $(Device/uimage-lzma-loader)
+  IMAGE_SIZE := 30m
+  DEVICE_VENDOR := Kroks
+  DEVICE_MODEL := Rt-Cse4 4mXW G
+  $(Device/Kroks-mpci)
+  DEVICE_PACKAGES += kmod-usb3 kmod-mt7603 kmod-mt7615e kmod-mt7663-firmware-ap
+  SUPPORTED_DEVICES += kndrt41r5
+endef
+TARGET_DEVICES += kroks_kndrt41r5
+
+define Device/kroks_kndrt41r6
+  $(Device/dsa-migration)
+  $(Device/uimage-lzma-loader)
+  IMAGE_SIZE := 30m
+  DEVICE_VENDOR := Kroks
+  DEVICE_MODEL := Rt-Pot W G
+  DEVICE_PACKAGES += kmod-usb3 kmod-mt7603 kmod-mt7615e kmod-mt7663-firmware-ap
+  SUPPORTED_DEVICES += kndrt41r6
+endef
+TARGET_DEVICES += kroks_kndrt41r6
 
 define Device/lenovo_newifi-d1
   $(Device/dsa-migration)

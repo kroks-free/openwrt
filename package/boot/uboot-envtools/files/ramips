@@ -9,6 +9,17 @@ touch /etc/config/ubootenv
 . /lib/uboot-envtools.sh
 . /lib/functions.sh
 
+kroks_setup_env() {
+	local board="$1"
+
+	case "$board" in
+	*,kndrt31r*|\
+	*,kndrt41r*)
+		ubootenv_add_uci_config "/dev/mtd1" "0x0" "0x1000" "0x10000"
+		;;
+	esac
+}
+
 board=$(board_name)
 
 case "$board" in
@@ -85,6 +96,9 @@ xiaomi,mi-router-cr6606|\
 xiaomi,mi-router-cr6608|\
 xiaomi,mi-router-cr6609)
 	ubootenv_add_uci_config "/dev/mtd1" "0x0" "0x10000" "0x20000"
+	;;
+*)
+	kroks_setup_env "$board"
 	;;
 esac
 

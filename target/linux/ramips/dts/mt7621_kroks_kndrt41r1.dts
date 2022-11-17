@@ -1,0 +1,92 @@
+#include "mt7621_kroks.dtsi"
+
+/ {
+	compatible = "kroks,kndrt41r1", "mediatek,mt7621-soc";
+	model = "Kroks KNdRt41R1";
+
+	leds {
+		compatible = "gpio-leds";
+
+		wifi2 {
+			label = "led:wifi2";
+			gpios = <&gpio 13 GPIO_ACTIVE_LOW>;
+			linux,default-trigger = "phy0tpt";
+		};
+
+		wifi5 {
+			label = "led:wifi5";
+			gpios = <&gpio 15 GPIO_ACTIVE_LOW>;
+			linux,default-trigger = "phy1tpt";
+		};
+	};
+
+	gpio_export {
+		compatible = "gpio-export";
+		#size-cells = <0>;
+
+		modem1power {
+			gpio-export,name = "modem1power";
+			gpio-export,output = <1>;
+			gpios = <&gpio 5 GPIO_ACTIVE_HIGH>;
+		};
+
+		usb1power {
+			gpio-export,name = "usb1power";
+			gpio-export,output = <1>;
+			gpios = <&gpio 14  GPIO_ACTIVE_HIGH>;
+		};
+
+		modem1sim1 {
+			gpio-export,name = "modem1sim1";
+			gpio-export,output = <1>;
+			gpios = <&gpio 17 GPIO_ACTIVE_HIGH>;
+		};
+
+		modem1sim2 {
+			gpio-export,name = "modem1sim2";
+			gpio-export,output = <0>;
+			gpios = <&gpio 7 GPIO_ACTIVE_HIGH>;
+		};
+	};
+};
+
+&mdio {
+	ethphy0: ethernet-phy@0 {
+		reg = <0>;
+	};
+};
+
+&gmac1 {
+	status = "okay";
+	label = "wan";
+	phy-handle = <&ethphy0>;
+
+	nvmem-cells = <&macaddr_factory_2e>;
+	nvmem-cell-names = "mac-address";
+};
+
+&switch0 {
+	ports {
+		port@1 {
+			status = "okay";
+			label = "lan1";
+		};
+
+		port@2 {
+			status = "okay";
+			label = "lan2";
+		};
+
+		port@3 {
+			status = "okay";
+			label = "lan3";
+		};
+	};
+};
+
+&state_default {
+	gpio {
+		groups = "jtag";
+		function = "gpio";
+	};
+};
