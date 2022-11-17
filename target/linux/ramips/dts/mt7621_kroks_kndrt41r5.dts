@@ -1,0 +1,109 @@
+#include "mt7621_kroks.dtsi"
+
+/ {
+	compatible = "kroks,kndrt41r5", "mediatek,mt7621-soc";
+	model = "Kroks KNdRt41R5";
+
+	aliases {
+		led-boot = &led_status;
+		led-failsafe = &led_status;
+		led-running = &led_status;
+		led-upgrade = &led_status;
+	};
+
+	leds {
+		compatible = "gpio-leds";
+
+		led_status: status {
+			label = "led:status";
+			gpios = <&gpio 6 GPIO_ACTIVE_LOW>;
+		};
+
+		wifi2 {
+			label = "led:wifi2";
+			gpios = <&gpio 13 GPIO_ACTIVE_LOW>;
+			linux,default-trigger = "phy0tpt";
+		};
+
+		wifi5 {
+			label = "led:wifi5";
+			gpios = <&gpio 15 GPIO_ACTIVE_LOW>;
+			linux,default-trigger = "phy1tpt";
+		};
+	};
+
+	gpio_export {
+		compatible = "gpio-export";
+		#size-cells = <0>;
+
+		modem1power {
+			gpio-export,name = "modem1power";
+			gpio-export,output = <1>;
+			gpios = <&gpio 5 GPIO_ACTIVE_HIGH>;
+		};
+
+		modem2power {
+			gpio-export,name = "modem2power";
+			gpio-export,output = <1>;
+			gpios = <&gpio 7 GPIO_ACTIVE_HIGH>;
+		};
+
+		modem3power {
+			gpio-export,name = "modem3power";
+			gpio-export,output = <1>;
+			gpios = <&gpio 4 GPIO_ACTIVE_HIGH>;
+		};
+
+		modem4power {
+			gpio-export,name = "modem4power";
+			gpio-export,output = <1>;
+			gpios = <&gpio 3 GPIO_ACTIVE_HIGH>;
+		};
+	};
+};
+
+&gmac1 {
+	status = "okay";
+	label = "wan";
+	phy-handle = <&ethphy0>;
+
+	nvmem-cells = <&macaddr_factory_2e>;
+	nvmem-cell-names = "mac-address";
+};
+
+&switch0 {
+	ports {
+		port@1 {
+			status = "okay";
+			label = "lan1";
+		};
+
+		port@2 {
+			status = "okay";
+			label = "lan2";
+		};
+
+		port@3 {
+			status = "okay";
+			label = "lan3";
+		};
+	};
+};
+
+&state_default {
+	gpio {
+		groups = "i2c", "uart3", "jtag";
+		function = "gpio";
+	};
+};
+
+&xhci {
+	status = "disabled";
+	/* mediatek,u3p-dis-msk = <0x1>; */
+};
+
+&pcie {
+	reset-gpios = <&gpio 19 GPIO_ACTIVE_LOW>,
+		      <>,
+		      <&gpio 14 GPIO_ACTIVE_LOW>;
+};

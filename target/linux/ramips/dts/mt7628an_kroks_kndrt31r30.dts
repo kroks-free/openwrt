@@ -1,0 +1,56 @@
+#include "mt7628an_kroks_1eth.dtsi"
+
+/ {
+	compatible = "kroks,kndrt31r30", "mediatek,mt7628an-soc";
+	model = "Kroks KNdRt31R30";
+
+	aliases {
+		led-boot = &led_status;
+		led-failsafe = &led_status;
+		led-running = &led_status;
+		led-upgrade = &led_status;
+	};
+
+	leds {
+		compatible = "gpio-leds";
+
+		led_status: status {
+			label = "led:status";
+			gpios = <&gpio 2 GPIO_ACTIVE_LOW>;
+		};
+	};
+
+	gpio_export {
+		compatible = "gpio-export";
+		#size-cells = <0>;
+
+		modem1power {
+			gpio-export,name = "modem1power";
+			gpio-export,output = <0>;
+			gpios = <&gpio 1 GPIO_ACTIVE_LOW>;
+		};
+
+		modem1sim1 {
+			gpio-export,name = "modem1sim1";
+			gpio-export,output = <1>;
+			gpios = <&gpio 3 GPIO_ACTIVE_HIGH>;
+		};
+
+		modem1sim2 {
+			gpio-export,name = "modem1sim2";
+			gpio-export,output = <0>;
+			gpios = <&gpio 4 GPIO_ACTIVE_HIGH>;
+		};
+	};
+};
+
+&state_default {
+	gpio {
+		groups = "i2s", "i2c";
+		function = "gpio";
+	};
+};
+
+&wmac {
+	status = "disabled";
+};

@@ -1,0 +1,82 @@
+#include "mt7628an_kroks_5eth.dtsi"
+
+/ {
+	compatible = "kroks,kndrt31r29", "mediatek,mt7628an-soc";
+	model = "Kroks KNdRt31R29";
+
+	aliases {
+		led-boot = &led_status;
+		led-failsafe = &led_status;
+		led-running = &led_status;
+		led-upgrade = &led_status;
+	};
+
+	leds {
+		compatible = "gpio-leds";
+
+		led_status: status {
+			label = "led:status";
+			gpios = <&gpio 2 GPIO_ACTIVE_LOW>;
+		};
+
+		wifi {
+			label = "led:wifi";
+			gpios = <&gpio 44 GPIO_ACTIVE_LOW>;
+			linux,default-trigger = "phy0tpt";
+		};
+	};
+
+	gpio_export {
+		compatible = "gpio-export";
+		#size-cells = <0>;
+
+		modem1power {
+			gpio-export,name = "modem1power";
+			gpio-export,output = <1>;
+			gpios = <&gpio 1 GPIO_ACTIVE_HIGH>;
+		};
+	};
+};
+
+&i2c {
+	status = "okay";
+
+	tps23861@20 {
+		status = "okay";
+
+		compatible = "ti,tps23861";
+		reg = <0x20>;
+		irq-gpios = <&gpio 11 GPIO_ACTIVE_LOW>;
+
+		port0@0 {
+			enable = <1>;
+			mode = "manual";
+			power = <0>;
+		};
+
+		port1@1 {
+			enable = <1>;
+			mode = "manual";
+			power = <0>;
+		};
+
+		port2@2 {
+			enable = <1>;
+			mode = "manual";
+			power = <0>;
+		};
+
+		port3@3 {
+			enable = <1>;
+			mode = "manual";
+			power = <0>;
+		};
+	};
+};
+
+&state_default {
+	gpio {
+		groups = "i2s", "gpio", "refclk", "wled_an";
+		function = "gpio";
+	};
+};

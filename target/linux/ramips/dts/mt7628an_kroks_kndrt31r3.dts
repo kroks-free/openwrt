@@ -1,0 +1,46 @@
+#include "mt7628an_kroks_5eth.dtsi"
+
+/ {
+	compatible = "kroks,kndrt31r3", "mediatek,mt7628an-soc";
+	model = "Kroks KNdRt31R3";
+
+	aliases {
+		led-boot = &led_status;
+		led-failsafe = &led_status;
+		led-running = &led_status;
+		led-upgrade = &led_status;
+	};
+
+	leds {
+		compatible = "gpio-leds";
+
+		led_status: status {
+			label = "led:status";
+			gpios = <&gpio 2 GPIO_ACTIVE_LOW>;
+		};
+
+		wifi {
+			label = "led:wifi";
+			gpios = <&gpio 44 GPIO_ACTIVE_LOW>;
+			linux,default-trigger = "phy0tpt";
+		};
+	};
+
+	gpio_export {
+		compatible = "gpio-export";
+		#size-cells = <0>;
+
+		modem1power {
+			gpio-export,name = "modem1power";
+			gpio-export,output = <1>;
+			gpios = <&gpio 1 GPIO_ACTIVE_HIGH>;
+		};
+	};
+};
+
+&state_default {
+	gpio {
+		groups = "i2s", "wled_an";
+		function = "gpio";
+	};
+};

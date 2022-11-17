@@ -1,0 +1,59 @@
+#include "mt7621_kroks.dtsi"
+
+/ {
+	compatible = "kroks,kndrt41r6", "mediatek,mt7621-soc";
+	model = "Kroks KNdRt41R6";
+
+	aliases {
+		led-boot = &led_status;
+		led-failsafe = &led_status;
+		led-running = &led_status;
+		led-upgrade = &led_status;
+	};
+
+	leds {
+		compatible = "gpio-leds";
+
+		led_status: status {
+			label = "led:status";
+			gpios = <&gpio 6 GPIO_ACTIVE_LOW>;
+		};
+
+		wifi2 {
+			label = "led:wifi2";
+			gpios = <&gpio 13 GPIO_ACTIVE_LOW>;
+			linux,default-trigger = "phy0tpt";
+		};
+
+		wifi5 {
+			label = "led:wifi5";
+			gpios = <&gpio 15 GPIO_ACTIVE_LOW>;
+			linux,default-trigger = "phy1tpt";
+		};
+	};
+};
+
+&switch0 {
+	ports {
+		port@3 {
+			status = "okay";
+			label = "lan2";
+		};
+
+		port@4 {
+			status = "okay";
+			label = "lan1";
+		};
+	};
+};
+
+&xhci {
+	status = "disabled";
+};
+
+&state_default {
+	gpio {
+		groups = "uart3", "jtag";
+		function = "gpio";
+	};
+};
