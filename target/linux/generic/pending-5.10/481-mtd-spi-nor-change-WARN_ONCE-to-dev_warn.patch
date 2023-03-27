@@ -1,0 +1,27 @@
+From c7ed045b8e1249b7a7337d1948ba98f2ad450b91 Mon Sep 17 00:00:00 2001
+From: Kroks <dev@kroks.ru>
+Date: Thu, 20 Oct 2022 11:38:36 +0300
+Subject: [PATCH] mtd: spi-nor: change WARN_ONCE to dev_warn
+
+---
+ drivers/mtd/spi-nor/core.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/mtd/spi-nor/core.c b/drivers/mtd/spi-nor/core.c
+index f392d2914..4358f0afa 100644
+--- a/drivers/mtd/spi-nor/core.c
++++ b/drivers/mtd/spi-nor/core.c
+@@ -2994,8 +2994,8 @@ static int spi_nor_init(struct spi_nor *nor)
+ 		 * reboots (e.g., crashes). Warn the user (or hopefully, system
+ 		 * designer) that this is bad.
+ 		 */
+-		WARN_ONCE(nor->flags & SNOR_F_BROKEN_RESET,
+-			  "enabling reset hack; may not recover from unexpected reboots\n");
++		if (nor->flags & SNOR_F_BROKEN_RESET)
++			dev_warn(nor->dev, "enabling reset hack; may not recover from unexpected reboots\n");
+ 		nor->params->set_4byte_addr_mode(nor, true);
+ 	}
+ 
+-- 
+2.38.0
+
