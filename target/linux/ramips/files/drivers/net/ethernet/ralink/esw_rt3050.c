@@ -642,6 +642,13 @@ static void esw_hw_init(struct rt305x_esw *esw)
 		for (i = 0; i < 5; i++) {
 			rt305x_mii_write(esw, i, 31, 0x8000);
 			rt305x_mii_write(esw, i,  0, 0x3100);
+
+			// disable EEE
+			rt305x_mii_write(esw, i, 13, 0x0007);
+			rt305x_mii_write(esw, i, 14, 0x003C);
+			rt305x_mii_write(esw, i, 13, 0x4007);
+			rt305x_mii_write(esw, i, 14, 0x0000);
+
 			rt305x_mii_write(esw, i, 30, 0xa000);
 			rt305x_mii_write(esw, i, 31, 0xa000);
 			rt305x_mii_write(esw, i, 16, 0x0606);
@@ -667,6 +674,11 @@ static void esw_hw_init(struct rt305x_esw *esw)
 		rt305x_mii_write(esw, 0, 28, 0x0233);
 		rt305x_mii_write(esw, 0, 29, 0x000a);
 		rt305x_mii_write(esw, 0, 30, 0x0000);
+
+		/* Fix EPHY idle state abnormal behavior */
+		rt305x_mii_write(esw, 0, 31, 0x4000);           // change G4 page
+		rt305x_mii_write(esw, 0, 29, 0x000d);
+		rt305x_mii_write(esw, 0, 30, 0x0500);
 	} else {
 		rt305x_mii_write(esw, 0, 31, 0x8000);
 		for (i = 0; i < 5; i++) {
