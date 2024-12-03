@@ -1,0 +1,34 @@
+From 85b535288efde8a4847256ef5dc89dd030b2189c Mon Sep 17 00:00:00 2001
+From: Andris PE <neandris@gmail.com>
+Date: Mon, 2 Sep 2024 15:38:59 +0000
+Subject: [PATCH 14/18] init: remove unnecessary stop logic
+
+Always remove table and service state to have consistent cleaned up
+system state on exit even if user intentionally dropped our table.
+Removes dependency on grep as a consequence.
+
+Ref: https://wiki.nftables.org/wiki-nftables/index.php/Configuring_tables
+Supersedes: https://github.com/openwrt/firewall4/pull/33
+Signed-off-by: Andris PE <neandris@gmail.com>
+---
+ root/sbin/fw4 | 9 +++------
+ 1 file changed, 3 insertions(+), 6 deletions(-)
+
+--- a/root/sbin/fw4
++++ b/root/sbin/fw4
+@@ -49,12 +49,9 @@ stop() {
+ 	{
+ 		flock -x 1000
+ 
+-		if nft list tables inet | grep -sq "table inet fw4"; then
+-			nft delete table inet fw4
+-			rm -f $STATE
+-		else
+-			return 1
+-		fi
++		nft delete table inet fw4
++		rm -f $STATE
++
+ 	} 1000>$LOCK
+ }
+ 

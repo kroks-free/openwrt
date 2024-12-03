@@ -1,0 +1,241 @@
+From fb1172243ce8af8fb44e1df5ab9796efa57545f8 Mon Sep 17 00:00:00 2001
+From: Andris PE <neandris@gmail.com>
+Date: Fri, 22 Mar 2024 10:51:07 +0000
+Subject: [PATCH 17/18] Do not emit helper jump without helper modules
+
+Do not emit helper jump if no helper modules are present saving
+per-every-packet bytecode before ct:
+```
+inet fw4 prerouting
+  [ meta load iifname => reg 1 ]
+  [ cmp eq reg 1 0x6c2d7262 0x00006e61 0x00000000 0x00000000 ]
+  [ immediate reg 0 jump -> helper_lan ]
+  userdata = { \x00-!fw4: Handle lan IPv4/IPv6 helper assignment\x00 }
+```
+
+Signed-off-by: Andris PE <neandris@gmail.com>
+---
+ root/usr/share/ucode/fw4.uc           |  3 ++-
+ tests/02_zones/01_policies            | 12 ------------
+ tests/02_zones/04_wildcard_devices    | 23 -----------------------
+ tests/02_zones/05_subnet_mask_matches |  9 ---------
+ tests/03_rules/03_constraints         |  3 ---
+ tests/03_rules/05_mangle              |  8 --------
+ tests/03_rules/11_log                 |  3 ---
+ 7 files changed, 2 insertions(+), 59 deletions(-)
+
+--- a/root/usr/share/ucode/fw4.uc
++++ b/root/usr/share/ucode/fw4.uc
+@@ -2209,7 +2209,7 @@ return {
+ 			zone.dflags.snat = true;
+ 
+ 		if ((zone.auto_helper && !(zone.masq || zone.masq6)) || length(zone.helper)) {
+-			zone.dflags.helper = true;
++			zone.dflags.helper = false;
+ 
+ 			for (let helper in (length(zone.helper) ? zone.helper : this.state.helpers)) {
+ 				if (!helper.available)
+@@ -2226,6 +2226,7 @@ return {
+ 						target: "helper",
+ 						set_helper: helper
+ 					});
++					zone.dflags.helper = true;
+ 				}
+ 			}
+ 		}
+--- a/tests/02_zones/01_policies
++++ b/tests/02_zones/01_policies
+@@ -123,9 +123,6 @@ table inet fw4 {
+ 
+ 	chain prerouting {
+ 		type filter hook prerouting priority filter; policy accept;
+-		iifname "zone1" jump helper_test1 comment "!fw4: Handle test1 IPv4/IPv6 helper assignment"
+-		iifname "zone2" jump helper_test2 comment "!fw4: Handle test2 IPv4/IPv6 helper assignment"
+-		iifname "zone3" jump helper_test3 comment "!fw4: Handle test3 IPv4/IPv6 helper assignment"
+ 	}
+ 
+ 	chain handle_reject {
+@@ -145,9 +142,6 @@ table inet fw4 {
+ 		jump accept_to_test1
+ 	}
+ 
+-	chain helper_test1 {
+-	}
+-
+ 	chain accept_from_test1 {
+ 		iifname "zone1" counter accept comment "!fw4: accept test1 IPv4/IPv6 traffic"
+ 	}
+@@ -168,9 +162,6 @@ table inet fw4 {
+ 		jump drop_to_test2
+ 	}
+ 
+-	chain helper_test2 {
+-	}
+-
+ 	chain drop_from_test2 {
+ 		iifname "zone2" counter drop comment "!fw4: drop test2 IPv4/IPv6 traffic"
+ 	}
+@@ -191,9 +182,6 @@ table inet fw4 {
+ 		jump reject_to_test3
+ 	}
+ 
+-	chain helper_test3 {
+-	}
+-
+ 	chain reject_from_test3 {
+ 		iifname "zone3" counter jump handle_reject comment "!fw4: reject test3 IPv4/IPv6 traffic"
+ 	}
+--- a/tests/02_zones/04_wildcard_devices
++++ b/tests/02_zones/04_wildcard_devices
+@@ -168,14 +168,6 @@ table inet fw4 {
+ 
+ 	chain prerouting {
+ 		type filter hook prerouting priority filter; policy accept;
+-		iifname "/never/" jump helper_test2 comment "!fw4: Handle test2 IPv4/IPv6 helper assignment"
+-		iifname "test*" jump helper_test3 comment "!fw4: Handle test3 IPv4/IPv6 helper assignment"
+-		iifname "foo*" jump helper_test4 comment "!fw4: Handle test4 IPv4/IPv6 helper assignment"
+-		iifname "bar*" jump helper_test4 comment "!fw4: Handle test4 IPv4/IPv6 helper assignment"
+-		iifname { "test1", "test2" } jump helper_test4 comment "!fw4: Handle test4 IPv4/IPv6 helper assignment"
+-		iifname "foo*" iifname != { "test3", "test4" } iifname != "baz*" iifname != "qrx*" jump helper_test5 comment "!fw4: Handle test5 IPv4/IPv6 helper assignment"
+-		iifname "bar*" iifname != { "test3", "test4" } iifname != "baz*" iifname != "qrx*" jump helper_test5 comment "!fw4: Handle test5 IPv4/IPv6 helper assignment"
+-		iifname { "test1", "test2" } iifname != { "test3", "test4" } iifname != "baz*" iifname != "qrx*" jump helper_test5 comment "!fw4: Handle test5 IPv4/IPv6 helper assignment"
+ 	}
+ 
+ 	chain handle_reject {
+@@ -195,9 +187,6 @@ table inet fw4 {
+ 		jump drop_to_test1
+ 	}
+ 
+-	chain helper_test1 {
+-	}
+-
+ 	chain drop_from_test1 {
+ 		counter drop comment "!fw4: drop test1 IPv4/IPv6 traffic"
+ 	}
+@@ -218,9 +207,6 @@ table inet fw4 {
+ 		jump drop_to_test2
+ 	}
+ 
+-	chain helper_test2 {
+-	}
+-
+ 	chain drop_from_test2 {
+ 		iifname "/never/" counter drop comment "!fw4: drop test2 IPv4/IPv6 traffic"
+ 	}
+@@ -241,9 +227,6 @@ table inet fw4 {
+ 		jump drop_to_test3
+ 	}
+ 
+-	chain helper_test3 {
+-	}
+-
+ 	chain drop_from_test3 {
+ 		iifname "test*" counter drop comment "!fw4: drop test3 IPv4/IPv6 traffic"
+ 	}
+@@ -264,9 +247,6 @@ table inet fw4 {
+ 		jump drop_to_test4
+ 	}
+ 
+-	chain helper_test4 {
+-	}
+-
+ 	chain drop_from_test4 {
+ 		iifname "foo*" counter drop comment "!fw4: drop test4 IPv4/IPv6 traffic"
+ 		iifname "bar*" counter drop comment "!fw4: drop test4 IPv4/IPv6 traffic"
+@@ -291,9 +271,6 @@ table inet fw4 {
+ 		jump drop_to_test5
+ 	}
+ 
+-	chain helper_test5 {
+-	}
+-
+ 	chain drop_from_test5 {
+ 		iifname "foo*" iifname != { "test3", "test4" } iifname != "baz*" iifname != "qrx*" counter drop comment "!fw4: drop test5 IPv4/IPv6 traffic"
+ 		iifname "bar*" iifname != { "test3", "test4" } iifname != "baz*" iifname != "qrx*" counter drop comment "!fw4: drop test5 IPv4/IPv6 traffic"
+--- a/tests/02_zones/05_subnet_mask_matches
++++ b/tests/02_zones/05_subnet_mask_matches
+@@ -112,9 +112,6 @@ table inet fw4 {
+ 
+ 	chain prerouting {
+ 		type filter hook prerouting priority filter; policy accept;
+-		meta nfproto ipv6 ip6 saddr != { ::7, ::8 } ip6 saddr & ::ffff == ::1 ip6 saddr & ::ffff != ::5 ip6 saddr & ::ffff != ::6 jump helper_test2 comment "!fw4: Handle test2 IPv6 helper assignment"
+-		meta nfproto ipv6 ip6 saddr != { ::7, ::8 } ip6 saddr & ::ffff == ::2 ip6 saddr & ::ffff != ::5 ip6 saddr & ::ffff != ::6 jump helper_test2 comment "!fw4: Handle test2 IPv6 helper assignment"
+-		meta nfproto ipv6 ip6 saddr { ::3, ::4 } ip6 saddr != { ::7, ::8 } ip6 saddr & ::ffff != ::5 ip6 saddr & ::ffff != ::6 jump helper_test2 comment "!fw4: Handle test2 IPv6 helper assignment"
+ 	}
+ 
+ 	chain handle_reject {
+@@ -134,9 +131,6 @@ table inet fw4 {
+ 		jump drop_to_test1
+ 	}
+ 
+-	chain helper_test1 {
+-	}
+-
+ 	chain drop_from_test1 {
+ 		meta nfproto ipv6 ip6 saddr & ::ffff == ::1 ip6 saddr & ::ffff != ::2 counter drop comment "!fw4: drop test1 IPv6 traffic"
+ 	}
+@@ -157,9 +151,6 @@ table inet fw4 {
+ 		jump drop_to_test2
+ 	}
+ 
+-	chain helper_test2 {
+-	}
+-
+ 	chain drop_from_test2 {
+ 		meta nfproto ipv6 ip6 saddr != { ::7, ::8 } ip6 saddr & ::ffff == ::1 ip6 saddr & ::ffff != ::5 ip6 saddr & ::ffff != ::6 counter drop comment "!fw4: drop test2 IPv6 traffic"
+ 		meta nfproto ipv6 ip6 saddr != { ::7, ::8 } ip6 saddr & ::ffff == ::2 ip6 saddr & ::ffff != ::5 ip6 saddr & ::ffff != ::6 counter drop comment "!fw4: drop test2 IPv6 traffic"
+--- a/tests/03_rules/03_constraints
++++ b/tests/03_rules/03_constraints
+@@ -147,9 +147,6 @@ table inet fw4 {
+ 		jump drop_to_lan
+ 	}
+ 
+-	chain helper_lan {
+-	}
+-
+ 	chain drop_from_lan {
+ 	}
+ 
+--- a/tests/03_rules/05_mangle
++++ b/tests/03_rules/05_mangle
+@@ -203,8 +203,6 @@ table inet fw4 {
+ 
+ 	chain prerouting {
+ 		type filter hook prerouting priority filter; policy accept;
+-		iifname { "eth0", "eth1" } jump helper_lan comment "!fw4: Handle lan IPv4/IPv6 helper assignment"
+-		iifname { "eth2", "eth3" } jump helper_wan comment "!fw4: Handle wan IPv4/IPv6 helper assignment"
+ 	}
+ 
+ 	chain handle_reject {
+@@ -224,9 +222,6 @@ table inet fw4 {
+ 		jump drop_to_lan
+ 	}
+ 
+-	chain helper_lan {
+-	}
+-
+ 	chain drop_from_lan {
+ 		iifname { "eth0", "eth1" } counter drop comment "!fw4: drop lan IPv4/IPv6 traffic"
+ 	}
+@@ -247,9 +242,6 @@ table inet fw4 {
+ 		jump drop_to_wan
+ 	}
+ 
+-	chain helper_wan {
+-	}
+-
+ 	chain drop_from_wan {
+ 		iifname { "eth2", "eth3" } counter drop comment "!fw4: drop wan IPv4/IPv6 traffic"
+ 	}
+--- a/tests/03_rules/11_log
++++ b/tests/03_rules/11_log
+@@ -157,9 +157,6 @@ table inet fw4 {
+ 		jump drop_to_wan
+ 	}
+ 
+-	chain helper_wan {
+-	}
+-
+ 	chain drop_from_wan {
+ 	}
+ 
