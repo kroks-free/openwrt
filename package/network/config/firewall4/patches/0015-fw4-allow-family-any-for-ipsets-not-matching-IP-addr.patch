@@ -1,0 +1,65 @@
+From 3191acdbd504372d26cf0f64fd5ba09a85b1edc6 Mon Sep 17 00:00:00 2001
+From: Jo-Philipp Wich <jo@mein.io>
+Date: Sat, 27 Jul 2024 21:36:52 +0800
+Subject: [PATCH 15/18] fw4: allow family `any` for ipsets not matching IP
+ addresses
+
+When filtering by MAC address, it is usually necessary to filter both IPv4
+and IPv6.
+
+If it is not allowed to set the family of ipset to any, it will be necessary
+to create a separate, identical ipset for both IPv4 and IPv6.
+
+Fixes: https://github.com/openwrt/firewall4/issues/16
+Suggested-by: zsien <i@zsien.cn>
+[fix redirect cases, reword commit subject, rewrap commit message]
+Signed-off-by: Jo-Philipp Wich <jo@mein.io>
+---
+ root/usr/share/ucode/fw4.uc | 15 ++++++++-------
+ 1 file changed, 8 insertions(+), 7 deletions(-)
+
+--- a/root/usr/share/ucode/fw4.uc
++++ b/root/usr/share/ucode/fw4.uc
+@@ -2571,7 +2571,7 @@ return {
+ 
+ 			/* check if there's no AF specific bits, in this case we can do an AF agnostic rule */
+ 			if (!family && rule.target != "dscp" && !has_ipv4_specifics && !has_ipv6_specifics) {
+-				add_rule(0, proto, [], [], sports, dports, null, null, null, rule);
++				add_rule(0, proto, [], [], sports, dports, null, null, ipset, rule);
+ 			}
+ 
+ 			/* we need to emit one or two AF specific rules */
+@@ -2996,7 +2996,7 @@ return {
+ 				if (family == null)
+ 					family = 4;
+ 
+-				add_rule(family, proto, [], [], null, sport, dport, rport, null, redir);
++				add_rule(family, proto, [], [], null, sport, dport, rport, ipset, redir);
+ 			}
+ 
+ 			/* we need to emit one or two AF specific rules */
+@@ -3305,11 +3305,7 @@ return {
+ 			return;
+ 		}
+ 
+-		if (ipset.family == 0) {
+-			this.warn_section(data, "must not specify family 'any'");
+-			return;
+-		}
+-		else if (!length(ipset.match)) {
++		if (!length(ipset.match)) {
+ 			this.warn_section(data, "has no datatypes assigned");
+ 			return;
+ 		}
+@@ -3318,6 +3314,11 @@ return {
+ 		    types = map(ipset.match, m => m[1]),
+ 		    interval = false;
+ 
++		if (("ip" in types || "net" in types) && ipset.family == 0) {
++			this.warn_section(data, "must not specify family 'any' when matching type 'ip' or 'net'");
++			return;
++		}
++
+ 		if ("set" in types) {
+ 			this.warn_section(data, "match type 'set' is not supported");
+ 			return;

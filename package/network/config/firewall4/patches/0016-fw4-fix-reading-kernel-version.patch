@@ -1,0 +1,27 @@
+From 59903a47dcb34e6e4612ff2e355ac14a04beb8dd Mon Sep 17 00:00:00 2001
+From: Mieczyslaw Nalewaj <namiltd@yahoo.com>
+Date: Wed, 20 Nov 2024 18:52:26 +0100
+Subject: [PATCH 16/18] fw4: fix reading kernel version
+
+Fix reading kernel version for kernels with revision 0 e.g. 6.12
+Repair incorrect shift of the revision number causing incorrect value for > 255.
+
+Signed-off-by: Mieczyslaw Nalewaj <namiltd@yahoo.com>
+---
+ root/usr/share/ucode/fw4.uc | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+--- a/root/usr/share/ucode/fw4.uc
++++ b/root/usr/share/ucode/fw4.uc
+@@ -496,9 +496,9 @@ return {
+ 		    v = 0;
+ 
+ 		if (fd) {
+-		    let m = match(fd.read("line"), /^Linux version ([0-9]+)\.([0-9]+)\.([0-9]+)/);
++		    let m = match(fd.read("line"), /^Linux version ([0-9]+)\.([0-9]+)(\.([0-9]+))?/);
+ 
+-		    v = m ? (+m[1] << 24) | (+m[2] << 16) | (+m[3] << 8) : 0;
++		    v = m ? (+m[1] << 24) | (+m[2] << 16) | (+m[4]) : 0;
+ 		    fd.close();
+ 		}
+ 
