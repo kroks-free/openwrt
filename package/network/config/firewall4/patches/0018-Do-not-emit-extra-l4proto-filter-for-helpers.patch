@@ -1,0 +1,143 @@
+From b7bca403c85b0336ef6abd5242c3ffefe57fe4cb Mon Sep 17 00:00:00 2001
+From: Andris PE <neandris@gmail.com>
+Date: Wed, 27 Nov 2024 01:03:20 +0000
+Subject: [PATCH 18/18] Do not emit extra l4proto filter for helpers
+
+Do not emit unncessary l4proto filter for helpers. No bytecode or
+readback changed.
+There is something better waiting on top of this cleanup
+
+Signed-off-by:
+---
+ .../share/firewall4/templates/mangle-rule.uc  |  2 +-
+ root/usr/share/firewall4/templates/rule.uc    |  2 +-
+ tests/01_configuration/01_ruleset             | 24 +++++++--------
+ tests/02_zones/06_family_selections           |  2 +-
+ tests/02_zones/07_helpers                     | 30 +++++++++----------
+ 5 files changed, 30 insertions(+), 30 deletions(-)
+
+--- a/root/usr/share/firewall4/templates/mangle-rule.uc
++++ b/root/usr/share/firewall4/templates/mangle-rule.uc
+@@ -2,7 +2,7 @@
+ 
+ {%+ if (rule.family && !rule.has_addrs): -%}
+ 	meta nfproto {{ fw4.nfproto(rule.family) }} {%+ endif -%}
+-{%+ if (!rule.proto.any && !rule.has_ports && !rule.icmp_types && !rule.icmp_codes): -%}
++{%+ if (!rule.proto.any && !rule.has_ports && !rule.icmp_types && !rule.icmp_codes && !rule.set_helper): -%}
+ 	meta l4proto {{
+ 		(rule.proto.name == 'icmp' && rule.family == 6) ? 'ipv6-icmp' : rule.proto.name
+ 	}} {%+ endif -%}
+--- a/root/usr/share/firewall4/templates/rule.uc
++++ b/root/usr/share/firewall4/templates/rule.uc
+@@ -1,6 +1,6 @@
+ {%+ if (rule.family && !rule.has_addrs): -%}
+ 	meta nfproto {{ fw4.nfproto(rule.family) }} {%+ endif -%}
+-{%+ if (!rule.proto.any && !rule.has_ports && !rule.icmp_types && !rule.icmp_codes): -%}
++{%+ if (!rule.proto.any && !rule.has_ports && !rule.icmp_types && !rule.icmp_codes && !rule.set_helper): -%}
+ 	meta l4proto {{ fw4.l4proto(rule.family, rule.proto) }} {%+ endif -%}
+ {%+ if (rule.iifnames): -%}
+ 	iifname {{ fw4.set(rule.iifnames) }} {%+ endif -%}
+--- a/tests/01_configuration/01_ruleset
++++ b/tests/01_configuration/01_ruleset
+@@ -169,18 +169,18 @@ table inet fw4 {
+ 	}
+ 
+ 	chain helper_lan {
+-		meta l4proto udp udp dport 10080 ct helper set "amanda" comment "!fw4: Amanda backup and archiving proto"
+-		meta l4proto tcp tcp dport 21 ct helper set "ftp" comment "!fw4: FTP passive connection tracking"
+-		meta l4proto udp udp dport 1719 ct helper set "RAS" comment "!fw4: RAS proto tracking"
+-		meta l4proto tcp tcp dport 1720 ct helper set "Q.931" comment "!fw4: Q.931 proto tracking"
+-		meta nfproto ipv4 meta l4proto tcp tcp dport 6667 ct helper set "irc" comment "!fw4: IRC DCC connection tracking"
+-		meta nfproto ipv4 meta l4proto udp udp dport 137 ct helper set "netbios-ns" comment "!fw4: NetBIOS name service broadcast tracking"
+-		meta nfproto ipv4 meta l4proto tcp tcp dport 1723 ct helper set "pptp" comment "!fw4: PPTP VPN connection tracking"
+-		meta l4proto tcp tcp dport 6566 ct helper set "sane" comment "!fw4: SANE scanner connection tracking"
+-		meta l4proto udp udp dport 5060 ct helper set "sip" comment "!fw4: SIP VoIP connection tracking"
+-		meta nfproto ipv4 meta l4proto udp udp dport 161 ct helper set "snmp" comment "!fw4: SNMP monitoring connection tracking"
+-		meta l4proto udp udp dport 69 ct helper set "tftp" comment "!fw4: TFTP connection tracking"
+-		meta nfproto ipv4 meta l4proto tcp tcp dport 554 ct helper set "rtsp" comment "!fw4: RTSP connection tracking"
++		udp dport 10080 ct helper set "amanda" comment "!fw4: Amanda backup and archiving proto"
++		tcp dport 21 ct helper set "ftp" comment "!fw4: FTP passive connection tracking"
++		udp dport 1719 ct helper set "RAS" comment "!fw4: RAS proto tracking"
++		tcp dport 1720 ct helper set "Q.931" comment "!fw4: Q.931 proto tracking"
++		meta nfproto ipv4 tcp dport 6667 ct helper set "irc" comment "!fw4: IRC DCC connection tracking"
++		meta nfproto ipv4 udp dport 137 ct helper set "netbios-ns" comment "!fw4: NetBIOS name service broadcast tracking"
++		meta nfproto ipv4 tcp dport 1723 ct helper set "pptp" comment "!fw4: PPTP VPN connection tracking"
++		tcp dport 6566 ct helper set "sane" comment "!fw4: SANE scanner connection tracking"
++		udp dport 5060 ct helper set "sip" comment "!fw4: SIP VoIP connection tracking"
++		meta nfproto ipv4 udp dport 161 ct helper set "snmp" comment "!fw4: SNMP monitoring connection tracking"
++		udp dport 69 ct helper set "tftp" comment "!fw4: TFTP connection tracking"
++		meta nfproto ipv4 tcp dport 554 ct helper set "rtsp" comment "!fw4: RTSP connection tracking"
+ 	}
+ 
+ 	chain accept_from_lan {
+--- a/tests/02_zones/06_family_selections
++++ b/tests/02_zones/06_family_selections
+@@ -294,7 +294,7 @@ table inet fw4 {
+ 	}
+ 
+ 	chain helper_test6 {
+-		meta nfproto ipv4 meta l4proto tcp tcp dport 1234 ct helper set "test" comment "!fw4: An example IPv4-only conntrack helper"
++		meta nfproto ipv4 tcp dport 1234 ct helper set "test" comment "!fw4: An example IPv4-only conntrack helper"
+ 	}
+ 
+ 	chain drop_from_test6 {
+--- a/tests/02_zones/07_helpers
++++ b/tests/02_zones/07_helpers
+@@ -223,7 +223,7 @@ table inet fw4 {
+ 	}
+ 
+ 	chain helper_test1 {
+-		meta l4proto udp udp dport 69 ct helper set "tftp" comment "!fw4: TFTP connection tracking"
++		udp dport 69 ct helper set "tftp" comment "!fw4: TFTP connection tracking"
+ 	}
+ 
+ 	chain drop_from_test1 {
+@@ -247,7 +247,7 @@ table inet fw4 {
+ 	}
+ 
+ 	chain helper_test2 {
+-		meta l4proto udp udp dport 69 ct helper set "tftp" comment "!fw4: TFTP connection tracking"
++		udp dport 69 ct helper set "tftp" comment "!fw4: TFTP connection tracking"
+ 	}
+ 
+ 	chain drop_from_test2 {
+@@ -271,7 +271,7 @@ table inet fw4 {
+ 	}
+ 
+ 	chain helper_test3 {
+-		meta l4proto udp udp dport 69 ct helper set "tftp" comment "!fw4: TFTP connection tracking"
++		udp dport 69 ct helper set "tftp" comment "!fw4: TFTP connection tracking"
+ 	}
+ 
+ 	chain drop_from_test3 {
+@@ -295,18 +295,18 @@ table inet fw4 {
+ 	}
+ 
+ 	chain helper_test4 {
+-		meta l4proto udp udp dport 10080 ct helper set "amanda" comment "!fw4: Amanda backup and archiving proto"
+-		meta l4proto tcp tcp dport 21 ct helper set "ftp" comment "!fw4: FTP passive connection tracking"
+-		meta l4proto udp udp dport 1719 ct helper set "RAS" comment "!fw4: RAS proto tracking"
+-		meta l4proto tcp tcp dport 1720 ct helper set "Q.931" comment "!fw4: Q.931 proto tracking"
+-		meta nfproto ipv4 meta l4proto tcp tcp dport 6667 ct helper set "irc" comment "!fw4: IRC DCC connection tracking"
+-		meta nfproto ipv4 meta l4proto udp udp dport 137 ct helper set "netbios-ns" comment "!fw4: NetBIOS name service broadcast tracking"
+-		meta nfproto ipv4 meta l4proto tcp tcp dport 1723 ct helper set "pptp" comment "!fw4: PPTP VPN connection tracking"
+-		meta l4proto tcp tcp dport 6566 ct helper set "sane" comment "!fw4: SANE scanner connection tracking"
+-		meta l4proto udp udp dport 5060 ct helper set "sip" comment "!fw4: SIP VoIP connection tracking"
+-		meta nfproto ipv4 meta l4proto udp udp dport 161 ct helper set "snmp" comment "!fw4: SNMP monitoring connection tracking"
+-		meta l4proto udp udp dport 69 ct helper set "tftp" comment "!fw4: TFTP connection tracking"
+-		meta nfproto ipv4 meta l4proto tcp tcp dport 554 ct helper set "rtsp" comment "!fw4: RTSP connection tracking"
++		udp dport 10080 ct helper set "amanda" comment "!fw4: Amanda backup and archiving proto"
++		tcp dport 21 ct helper set "ftp" comment "!fw4: FTP passive connection tracking"
++		udp dport 1719 ct helper set "RAS" comment "!fw4: RAS proto tracking"
++		tcp dport 1720 ct helper set "Q.931" comment "!fw4: Q.931 proto tracking"
++		meta nfproto ipv4 tcp dport 6667 ct helper set "irc" comment "!fw4: IRC DCC connection tracking"
++		meta nfproto ipv4 udp dport 137 ct helper set "netbios-ns" comment "!fw4: NetBIOS name service broadcast tracking"
++		meta nfproto ipv4 tcp dport 1723 ct helper set "pptp" comment "!fw4: PPTP VPN connection tracking"
++		tcp dport 6566 ct helper set "sane" comment "!fw4: SANE scanner connection tracking"
++		udp dport 5060 ct helper set "sip" comment "!fw4: SIP VoIP connection tracking"
++		meta nfproto ipv4 udp dport 161 ct helper set "snmp" comment "!fw4: SNMP monitoring connection tracking"
++		udp dport 69 ct helper set "tftp" comment "!fw4: TFTP connection tracking"
++		meta nfproto ipv4 tcp dport 554 ct helper set "rtsp" comment "!fw4: RTSP connection tracking"
+ 	}
+ 
+ 	chain drop_from_test4 {
