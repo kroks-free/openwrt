@@ -1,0 +1,41 @@
+if PACKAGE_kmod-crypto-hw-eip93
+
+config PACKAGE_MTK_EIP93_SKCIPHER
+	tristate
+
+config PACKAGE_MTK_EIP93_HMAC
+	tristate
+
+config PACKAGE_MTK_EIP93_AES
+	bool "Support for AES algorithm"
+	default y
+	select PACKAGE_MTK_EIP93_SKCIPHER
+	help
+	Selecting this will offload AES - ECB, CBC and CTR crypto
+	to the EIP-93 crypto engine.
+
+config PACKAGE_MTK_EIP93_DES
+	bool "Support for legacy DES / 3DES algorithm"
+	default y
+	select PACKAGE_MTK_EIP93_SKCIPHER
+	help
+	Selecting this will offload DES and 3DES ECB and CBC
+	crypto to the EIP-93 crypto engine.
+
+config PACKAGE_MTK_EIP93_AEAD
+	bool "Support for AEAD algorithm"
+	default y
+	select PACKAGE_MTK_EIP93_HMAC
+	help
+	Selecting this will offload AEAD authenc(hmac(x), cipher(y))
+	crypto to the EIP-93 crypto engine.
+
+config PACKAGE_MTK_EIP93_GENERIC_SW_MAX_LEN
+	int "Generic SW max len"
+	default "256"
+
+config PACKAGE_MTK_EIP93_AES_128_SW_MAX_LEN
+	int "AES SW max len"
+	default "512"
+
+endif
