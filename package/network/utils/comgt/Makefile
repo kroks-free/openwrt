@@ -21,7 +21,7 @@ PKG_LICENSE:=GPL-2.0+
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME).$(PKG_VERSION)
 PKG_CHECK_FORMAT_SECURITY:=0
 
-PKG_FLAGS:=nonshared
+PKG_FLAGS:=nonshared hold
 
 include $(INCLUDE_DIR)/package.mk
 
@@ -47,7 +47,7 @@ endef
 define Package/comgt-ncm
 $(call Package/comgt/Default)
   TITLE+=NCM 3G/4G Support
-  DEPENDS:=+comgt +wwan +kmod-usb-serial-option +kmod-usb-net-huawei-cdc-ncm
+  DEPENDS:=+comgt +wwan +kmod-usb-serial-option +kmod-usb-net-huawei-cdc-ncm +kmod-usb-net-cdc-ether +kmod-usb-net-rndis
 endef
 
 define Package/comgt/description
