@@ -1,0 +1,290 @@
+From e52b35234cafc12a155426b760e8ef27e89964fb Mon Sep 17 00:00:00 2001
+From: Kroks <dev@kroks.ru>
+Date: Thu, 17 Oct 2024 10:06:10 +0300
+Subject: [PATCH] kroks modems support
+
+---
+ drivers/net/usb/cdc_ether.c  | 59 ++++++++++++++++++++++++++++++++++++
+ drivers/net/usb/cdc_ncm.c    | 14 +++++++++
+ drivers/net/usb/qmi_wwan.c   |  5 ++-
+ drivers/net/usb/rndis_host.c | 14 ++++-----
+ drivers/usb/serial/option.c  | 51 ++++++++++++++++++++++---------
+ 5 files changed, 121 insertions(+), 22 deletions(-)
+
+--- a/drivers/net/usb/cdc_ether.c
++++ b/drivers/net/usb/cdc_ether.c
+@@ -521,6 +521,22 @@ static void usbnet_cdc_zte_status(struct
+ 	usbnet_link_change(dev, !!event->wValue, 0);
+ }
+ 
++/* Some ASR modems export unexpected carrier notifications which breaks
++ * connected state. Ignore them to avoid this problem.
++ */
++static void usbnet_cdc_asr_status(struct usbnet *dev, struct urb *urb)
++{
++	struct usb_cdc_notification *event;
++
++	if (urb->actual_length < sizeof(*event))
++		return;
++
++	event = urb->transfer_buffer;
++
++	if (event->bNotificationType != USB_CDC_NOTIFY_NETWORK_CONNECTION)
++		usbnet_cdc_status(dev, urb);
++}
++
+ static const struct driver_info	cdc_info = {
+ 	.description =	"CDC Ethernet Device",
+ 	.flags =	FLAG_ETHER | FLAG_POINTTOPOINT,
+@@ -552,6 +568,16 @@ static const struct driver_info wwan_inf
+ 	.manage_power =	usbnet_manage_power,
+ };
+ 
++static const struct driver_info asr_cdc_info = {
++	.description =	"Mobile Broadband Network Device (ASR)",
++	.flags =	FLAG_WWAN,
++	.bind =		usbnet_cdc_bind,
++	.unbind =	usbnet_cdc_unbind,
++	.status =	usbnet_cdc_asr_status,
++	.set_rx_mode =	usbnet_cdc_update_filter,
++	.manage_power =	usbnet_manage_power,
++};
++
+ /*-------------------------------------------------------------------------*/
+ 
+ #define HUAWEI_VENDOR_ID	0x12D1
+@@ -569,6 +595,9 @@ static const struct driver_info wwan_inf
+ #define TPLINK_VENDOR_ID	0x2357
+ #define AQUANTIA_VENDOR_ID	0x2eca
+ #define ASIX_VENDOR_ID		0x0b95
++#define QUECTEL_VENDOR_ID	0x2c7c
++#define ALINK_VENDOR_ID		0x1e0e
++#define MEIG_VENDOR_ID		0x2dee
+ 
+ static const struct usb_device_id	products[] = {
+ /* BLACKLIST !!
+@@ -1035,6 +1064,36 @@ static const struct usb_device_id	produc
+ 				      USB_CDC_PROTO_NONE),
+ 	.driver_info = (unsigned long)&wwan_info,
+ }, {
++	/* Quectel EG060V modem */
++	USB_DEVICE_AND_INTERFACE_INFO(QUECTEL_VENDOR_ID, 0x6004, USB_CLASS_COMM,
++				      USB_CDC_SUBCLASS_ETHERNET,
++				      USB_CDC_PROTO_NONE),
++	.driver_info = (unsigned long)&asr_cdc_info,
++}, {
++	/* Quectel EC200A modem */
++	USB_DEVICE_AND_INTERFACE_INFO(QUECTEL_VENDOR_ID, 0x6005, USB_CLASS_COMM,
++				      USB_CDC_SUBCLASS_ETHERNET,
++				      USB_CDC_PROTO_NONE),
++	.driver_info = (unsigned long)&asr_cdc_info,
++}, {
++	/* Quectel EC200T modem */
++	USB_DEVICE_AND_INTERFACE_INFO(QUECTEL_VENDOR_ID, 0x6026, USB_CLASS_COMM,
++				      USB_CDC_SUBCLASS_ETHERNET,
++				      USB_CDC_PROTO_NONE),
++	.driver_info = (unsigned long)&asr_cdc_info,
++}, {
++	/* Simcom A7906E modem */
++	USB_DEVICE_AND_INTERFACE_INFO(ALINK_VENDOR_ID, 0x9011, USB_CLASS_COMM,
++				      USB_CDC_SUBCLASS_ETHERNET,
++				      USB_CDC_PROTO_NONE),
++	.driver_info = (unsigned long)&asr_cdc_info,
++}, {
++	/* Meig ASR modems */
++	USB_DEVICE_AND_INTERFACE_INFO(MEIG_VENDOR_ID, 0x4d58, USB_CLASS_COMM,
++				      USB_CDC_SUBCLASS_ETHERNET,
++				      USB_CDC_PROTO_NONE),
++	.driver_info = (unsigned long)&asr_cdc_info,
++}, {
+ 	USB_INTERFACE_INFO(USB_CLASS_COMM, USB_CDC_SUBCLASS_ETHERNET,
+ 			USB_CDC_PROTO_NONE),
+ 	.driver_info = (unsigned long) &cdc_info,
+--- a/drivers/net/usb/cdc_ncm.c
++++ b/drivers/net/usb/cdc_ncm.c
+@@ -2016,6 +2016,20 @@ static const struct usb_device_id cdc_de
+ 	  .driver_info = (unsigned long)&wwan_info,
+ 	},
+ 
++	/* Quectel EG060V */
++	{ USB_DEVICE_AND_INTERFACE_INFO(0x2c7c, 0x6004,
++		USB_CLASS_COMM,
++		USB_CDC_SUBCLASS_NCM, USB_CDC_PROTO_NONE),
++	  .driver_info = (unsigned long)&wwan_info,
++	},
++
++	/* Simcom A7906E */
++	{ USB_DEVICE_AND_INTERFACE_INFO(0x1e0e, 0x9011,
++		USB_CLASS_COMM,
++		USB_CDC_SUBCLASS_NCM, USB_CDC_PROTO_NONE),
++	  .driver_info = (unsigned long)&wwan_info,
++	},
++
+ 	/* Generic CDC-NCM devices */
+ 	{ USB_INTERFACE_INFO(USB_CLASS_COMM,
+ 		USB_CDC_SUBCLASS_NCM, USB_CDC_PROTO_NONE),
+--- a/drivers/net/usb/qmi_wwan.c
++++ b/drivers/net/usb/qmi_wwan.c
+@@ -1088,13 +1088,16 @@ static const struct usb_device_id produc
+ 
+ 	{QMI_MATCH_FF_FF_FF(0x2c7c, 0x0125)},	/* Quectel EC25, EC20 R2.0  Mini PCIe */
+ 	{QMI_MATCH_FF_FF_FF(0x2c7c, 0x0306)},	/* Quectel EP06/EG06/EM06 */
++	{QMI_MATCH_FF_FF_FF(0x2c7c, 0x030b)},	/* Quectel EG120K-EA */
+ 	{QMI_MATCH_FF_FF_FF(0x2c7c, 0x0512)},	/* Quectel EG12/EM12 */
+ 	{QMI_MATCH_FF_FF_FF(0x2c7c, 0x0620)},	/* Quectel EM160R-GL */
+ 	{QMI_MATCH_FF_FF_FF(0x2c7c, 0x0800)},	/* Quectel RM500Q-GL */
+ 	{QMI_MATCH_FF_FF_FF(0x2c7c, 0x0801)},	/* Quectel RM520N */
+-	{QMI_MATCH_FF_FF_FF(0x05c6, 0xf601)},	/* MeigLink SLM750 */
+ 
+ 	/* 3. Combined interface devices matching on interface number */
++	{QMI_QUIRK_SET_DTR(0x05c6, 0xf601, 5)}, /* Meig SLM750/SLM868 */
++	{QMI_QUIRK_SET_DTR(0x2dee, 0x4d22, 5)}, /* Meig SLM828 V1 */
++	{QMI_QUIRK_SET_DTR(0x2dee, 0x4d62, 4)}, /* Meig SLM828 V2 */
+ 	{QMI_FIXED_INTF(0x0408, 0xea42, 4)},	/* Yota / Megafon M100-1 */
+ 	{QMI_FIXED_INTF(0x05c6, 0x6001, 3)},	/* 4G LTE usb-modem U901 */
+ 	{QMI_FIXED_INTF(0x05c6, 0x7000, 0)},
+--- a/drivers/net/usb/rndis_host.c
++++ b/drivers/net/usb/rndis_host.c
+@@ -631,8 +631,8 @@ static const struct driver_info	zte_rndi
+ };
+ 
+ static const struct driver_info asr_rndis_info = {
+-	.description =	"Asr RNDIS device",
+-	.flags =	FLAG_WWAN | FLAG_POINTTOPOINT | FLAG_FRAMING_RN | FLAG_NO_SETINT | FLAG_NOARP,
++	.description =	"RNDIS device (ASR)",
++	.flags =	FLAG_WWAN | FLAG_POINTTOPOINT | FLAG_FRAMING_RN | FLAG_NO_SETINT,
+ 	.bind =		rndis_bind,
+ 	.unbind =	rndis_unbind,
+ 	.status =	rndis_status,
+@@ -672,10 +672,6 @@ static const struct usb_device_id	produc
+ 	USB_INTERFACE_INFO(USB_CLASS_MISC, 1, 1),
+ 	.driver_info = (unsigned long) &rndis_poll_status_info,
+ }, {
+-	/* RNDIS for tethering */
+-	USB_INTERFACE_INFO(USB_CLASS_WIRELESS_CONTROLLER, 1, 3),
+-	.driver_info = (unsigned long) &rndis_info,
+-}, {
+ 	/* Quectel EG060V rndis device */
+ 	USB_DEVICE_AND_INTERFACE_INFO(0x2c7c, 0x6004,
+ 				      USB_CLASS_WIRELESS_CONTROLLER, 1, 3),
+@@ -696,7 +692,7 @@ static const struct usb_device_id	produc
+ 				      USB_CLASS_WIRELESS_CONTROLLER, 1, 3),
+ 	.driver_info = (unsigned long) &asr_rndis_info,
+ }, {
+-	/* Meig SLM770A */
++	/* Meig ASR rndis device */
+ 	USB_DEVICE_AND_INTERFACE_INFO(0x2dee, 0x4d57,
+ 				      USB_CLASS_WIRELESS_CONTROLLER, 1, 3),
+ 	.driver_info = (unsigned long) &asr_rndis_info,
+@@ -706,6 +702,10 @@ static const struct usb_device_id	produc
+ 				      USB_CLASS_WIRELESS_CONTROLLER, 1, 3),
+ 	.driver_info = (unsigned long) &asr_rndis_info,
+ }, {
++	/* RNDIS for tethering */
++	USB_INTERFACE_INFO(USB_CLASS_WIRELESS_CONTROLLER, 1, 3),
++	.driver_info = (unsigned long) &rndis_info,
++}, {
+ 	/* Novatel Verizon USB730L */
+ 	USB_INTERFACE_INFO(USB_CLASS_MISC, 4, 1),
+ 	.driver_info = (unsigned long) &rndis_info,
+--- a/drivers/usb/serial/option.c
++++ b/drivers/usb/serial/option.c
+@@ -247,11 +247,19 @@ static void option_instat_callback(struc
+ #define UBLOX_PRODUCT_R410M			0x90b2
+ /* These Yuga products use Qualcomm's vendor ID */
+ #define YUGA_PRODUCT_CLM920_NC5			0x9625
+-/* These MeigLink products use Qualcomm's vendor ID */
+-#define MEIGLINK_PRODUCT_SLM750			0xf601
++/* These Meig products use Qualcomm's vendor ID */
++#define MEIG_QCM_PRODUCT_Q			0xf601
+ 
+-#define MEIGLINK_VENDOR_ID			0x2dee
+-#define MEIGLINK_PRODUCT_SLM828			0x4d49
++#define MEIG_VENDOR_ID				0x2dee
++/* These Meig products use Meig's vendor ID */
++#define MEIG_PRODUCT_Q				0x4d49
++#define MEIG_PRODUCT_Q_V1			0x4d22
++#define MEIG_PRODUCT_Q_V2			0x4d62
++#define MEIG_PRODUCT_Q_ECM			0x4d23
++#define MEIG_PRODUCT_Q_RNDIS			0x4d38
++#define MEIG_PRODUCT_A_RNDIS			0x4d57
++#define MEIG_PRODUCT_A_ECM			0x4d58
++#define MEIG_PRODUCT_A_MBIM			0x4d59
+ 
+ #define QUECTEL_VENDOR_ID			0x2c7c
+ /* These Quectel products use Quectel's vendor ID */
+@@ -283,6 +291,7 @@ static void option_instat_callback(struc
+ #define QUECTEL_PRODUCT_EC200U			0x0901
+ #define QUECTEL_PRODUCT_EG912Y			0x6001
+ #define QUECTEL_PRODUCT_EC200S_CN		0x6002
++#define QUECTEL_PRODUCT_EG060V			0x6004
+ #define QUECTEL_PRODUCT_EC200A			0x6005
+ #define QUECTEL_PRODUCT_EM061K_LWW		0x6008
+ #define QUECTEL_PRODUCT_EM061K_LCN		0x6009
+@@ -383,6 +392,7 @@ static void option_instat_callback(struc
+ 
+ #define ALINK_VENDOR_ID				0x1e0e
+ #define SIMCOM_PRODUCT_SIM7100E			0x9001 /* Yes, ALINK_VENDOR_ID */
++#define SIMCOM_PRODUCT_A7906E			0x9011
+ #define ALINK_PRODUCT_PH300			0x9100
+ #define ALINK_PRODUCT_3GU			0x9200
+ 
+@@ -1164,10 +1174,24 @@ static const struct usb_device_id option
+ 	{ USB_DEVICE(QUALCOMM_VENDOR_ID, 0x9000), /* SIMCom SIM5218 */
+ 	  .driver_info = NCTRL(0) | NCTRL(1) | NCTRL(2) | NCTRL(3) | RSVD(4) },
+ 	/* MeiG */
+-	{ USB_DEVICE_AND_INTERFACE_INFO(MEIGLINK_VENDOR_ID, MEIGLINK_PRODUCT_SLM828, USB_CLASS_VENDOR_SPEC, 0x10, 0x01) },
+-	{ USB_DEVICE_AND_INTERFACE_INFO(MEIGLINK_VENDOR_ID, MEIGLINK_PRODUCT_SLM828, USB_CLASS_VENDOR_SPEC, 0x10, 0x02) },
+-	{ USB_DEVICE_AND_INTERFACE_INFO(MEIGLINK_VENDOR_ID, MEIGLINK_PRODUCT_SLM828, USB_CLASS_VENDOR_SPEC, 0x10, 0x03) },
+-	{ USB_DEVICE_AND_INTERFACE_INFO(MEIGLINK_VENDOR_ID, MEIGLINK_PRODUCT_SLM828, USB_CLASS_VENDOR_SPEC, 0x10, 0x04) },
++	{ USB_DEVICE(MEIG_VENDOR_ID, MEIG_PRODUCT_Q),
++	 .driver_info = RSVD(4) | RSVD(5) | RSVD(6) | RSVD(7) },
++	{ USB_DEVICE(MEIG_VENDOR_ID, MEIG_PRODUCT_Q_V1),
++	 .driver_info = RSVD(4) | RSVD(5) | RSVD(6) | RSVD(7) },
++	{ USB_DEVICE(MEIG_VENDOR_ID, MEIG_PRODUCT_Q_V2),
++	 .driver_info = RSVD(4) | RSVD(5) | RSVD(6) | RSVD(7) },
++	{ USB_DEVICE(MEIG_VENDOR_ID, MEIG_PRODUCT_Q_ECM),
++	 .driver_info = RSVD(4) | RSVD(5) | RSVD(6) | RSVD(7) },
++	{ USB_DEVICE(QUALCOMM_VENDOR_ID, MEIG_QCM_PRODUCT_Q),
++	 .driver_info = RSVD(4) | RSVD(5) | RSVD(6) | RSVD(7) },
++	{ USB_DEVICE(MEIG_VENDOR_ID, MEIG_PRODUCT_Q_RNDIS),
++	 .driver_info = RSVD(0) | RSVD(1) | RSVD(6) | RSVD(7) | RSVD(8) | RSVD(9) },
++	{ USB_DEVICE(MEIG_VENDOR_ID, MEIG_PRODUCT_A_RNDIS),
++	 .driver_info = RSVD(0) | RSVD(1) | RSVD(6) | RSVD(7) | RSVD(8) },
++	{ USB_DEVICE(MEIG_VENDOR_ID, MEIG_PRODUCT_A_ECM),
++	 .driver_info = RSVD(0) | RSVD(1) | RSVD(6) | RSVD(7) | RSVD(8) },
++	{ USB_DEVICE(MEIG_VENDOR_ID, MEIG_PRODUCT_A_MBIM),
++	 .driver_info = RSVD(0) | RSVD(1) | RSVD(6) | RSVD(7) | RSVD(8) },
+ 	/* Quectel products using Qualcomm vendor ID */
+ 	{ USB_DEVICE(QUALCOMM_VENDOR_ID, QUECTEL_PRODUCT_UC15)},
+ 	{ USB_DEVICE(QUALCOMM_VENDOR_ID, QUECTEL_PRODUCT_UC20),
+@@ -1209,11 +1233,6 @@ static const struct usb_device_id option
+ 	  .driver_info = ZLP },
+ 	{ USB_DEVICE(QUECTEL_VENDOR_ID, QUECTEL_PRODUCT_BG96),
+ 	  .driver_info = RSVD(4) },
+-	/* Meiglink products using Qualcomm vendor ID */
+-	// Works OK. In case of some issues check macros that are used by Quectel Products
+-	{ USB_DEVICE_AND_INTERFACE_INFO(QUALCOMM_VENDOR_ID, MEIGLINK_PRODUCT_SLM750, 0xff, 0xff, 0xff),
+-	  .driver_info = NUMEP2 },
+-	{ USB_DEVICE_AND_INTERFACE_INFO(QUALCOMM_VENDOR_ID, MEIGLINK_PRODUCT_SLM750, 0xff, 0, 0) },
+ 	{ USB_DEVICE_AND_INTERFACE_INFO(QUECTEL_VENDOR_ID, QUECTEL_PRODUCT_EP06, 0xff, 0xff, 0xff),
+ 	  .driver_info = RSVD(1) | RSVD(2) | RSVD(3) | RSVD(4) | NUMEP2 },
+ 	{ USB_DEVICE_AND_INTERFACE_INFO(QUECTEL_VENDOR_ID, QUECTEL_PRODUCT_EP06, 0xff, 0, 0) },
+@@ -1283,6 +1302,8 @@ static const struct usb_device_id option
+ 	{ USB_DEVICE_AND_INTERFACE_INFO(QUECTEL_VENDOR_ID, QUECTEL_PRODUCT_EC200A, 0xff, 0, 0) },
+ 	{ USB_DEVICE_AND_INTERFACE_INFO(QUECTEL_VENDOR_ID, QUECTEL_PRODUCT_EC200U, 0xff, 0, 0) },
+ 	{ USB_DEVICE_AND_INTERFACE_INFO(QUECTEL_VENDOR_ID, QUECTEL_PRODUCT_EC200S_CN, 0xff, 0, 0) },
++	{ USB_DEVICE_AND_INTERFACE_INFO(QUECTEL_VENDOR_ID, QUECTEL_PRODUCT_EG060V, 0x0a, 0, 0xff) },
++	{ USB_DEVICE_AND_INTERFACE_INFO(QUECTEL_VENDOR_ID, QUECTEL_PRODUCT_EG060V, 0xff, 0, 0) },
+ 	{ USB_DEVICE_AND_INTERFACE_INFO(QUECTEL_VENDOR_ID, QUECTEL_PRODUCT_EC200T, 0xff, 0, 0) },
+ 	{ USB_DEVICE_AND_INTERFACE_INFO(QUECTEL_VENDOR_ID, QUECTEL_PRODUCT_EG912Y, 0xff, 0, 0) },
+ 	{ USB_DEVICE_AND_INTERFACE_INFO(QUECTEL_VENDOR_ID, QUECTEL_PRODUCT_RM500K, 0xff, 0x00, 0x00) },
+@@ -2063,6 +2084,8 @@ static const struct usb_device_id option
+ 	{ USB_DEVICE_AND_INTERFACE_INFO(ALINK_VENDOR_ID, ALINK_PRODUCT_3GU, 0xff, 0xff, 0xff) },
+ 	{ USB_DEVICE(ALINK_VENDOR_ID, SIMCOM_PRODUCT_SIM7100E),
+ 	  .driver_info = RSVD(5) | RSVD(6) },
++	{ USB_DEVICE_AND_INTERFACE_INFO(ALINK_VENDOR_ID, SIMCOM_PRODUCT_A7906E, 0x0a, 0, 0xff) },
++	{ USB_DEVICE_AND_INTERFACE_INFO(ALINK_VENDOR_ID, SIMCOM_PRODUCT_A7906E, 0xff, 0, 0) },
+ 	{ USB_DEVICE_INTERFACE_CLASS(0x1e0e, 0x9003, 0xff) },	/* Simcom SIM7500/SIM7600 MBIM mode */
+ 	{ USB_DEVICE_INTERFACE_CLASS(0x1e0e, 0x9011, 0xff),	/* Simcom SIM7500/SIM7600 RNDIS mode */
+ 	  .driver_info = RSVD(7) },
