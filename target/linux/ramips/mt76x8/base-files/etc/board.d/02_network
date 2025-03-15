@@ -3,6 +3,74 @@
 . /lib/functions/uci-defaults.sh
 . /lib/functions/system.sh
 
+kroks_setup_network()
+ {
+ 	local board="$1"
+ 
+ 	case "$board" in
+ 	kndrt31r3|\
+ 	kndrt31r8|\
+ 	kndrt31r16|\
+ 	kndrt31r21|\
+ 	kndrt31r22|\
+ 	kndrt31r24)
+ 		ucidef_add_switch "switch0" \
+ 			"1:lan" "2:lan" "3:lan" "4:lan" "0:wan" "6@eth0"
+ 		;;
+ 	kndrt31r4|\
+ 	kndrt31r10|\
+ 	kndrt31r11|\
+ 	kndrt31r15|\
+ 	kndrt31r19|\
+ 	kndrt31r30)
+ 		ucidef_add_switch "switch0" \
+ 			"0:lan" "6@eth0"
+ 		;;
+ 	kndrt31r6)
+ 		ucidef_add_switch "switch0" \
+ 			"1:lan" "0:wan" "6@eth0"
+ 		;;
+ 	kndrt31r7)
+ 		ucidef_add_switch "switch0" \
+ 			"0:lan" "6@eth0"
+ 		ucidef_set_interface "modem1hilink" device "eth1" protocol "dhcp"
+ 		;;
+	kndrt31r16)
+		ucidef_add_switch "switch0" \
+			"0:lan:4" "1:lan:0" "2:lan:1" "3:lan:2" "4:lan:3" "6@eth0"
+			;;
+ 	kndrt31r18|\
+ 	kndrt31r20)
+ 		ucidef_add_switch "switch0" \
+ 			"1:lan" "2:lan" "3:lan" "0:wan" "6@eth0"
+ 		;;
+ 	kndrt31r26|\
+ 	kndrt31r27|\
+ 	kndrt31r28)
+ 		ucidef_add_switch "switch0" \
+ 			"1:lan:3" "2:lan:2" "3:lan:1" "4:wan" "6@eth0"
+ 		;;
+ 	kndrt31r29)
+ 		ucidef_add_switch "switch0" \
+ 			"1:lan" "2:lan" "3:lan" "4:lan" "0:wan" "6@eth0"
+ 		ucidef_set_interface "modem1hilink" device "eth1" protocol "dhcp"
+ 		;;
+ 	kndrt31r31)
+ 		ucidef_add_switch "switch0" \
+ 			"3:lan:2" "4:lan:1" "6@eth0"
+ 		;;
+	kndrt31r33|\
+	kndrt31r34)
+		ucidef_add_switch "switch0" \
+			"0:lan" "1:lan" "6@eth0"
+		;;
+	kndrt31r37)
+		ucidef_add_switch "switch0" \
+			"1:lan:3" "2:lan:2" "3:lan:1" "4:lan:4" "6@eth0"
+		;;
+ 	esac
+ }
+
 ramips_setup_interfaces()
 {
 	local board="$1"
@@ -40,7 +108,6 @@ ramips_setup_interfaces()
 	hilink,hlk-7628n|\
 	hilink,hlk-7688a|\
 	hiwifi,hc5861b|\
-	kroks,kndrt31r16|\
 	skylab,skw92a|\
 	tplink,archer-c20-v4|\
 	tplink,archer-c20-v5|\
@@ -122,17 +189,13 @@ ramips_setup_interfaces()
 		ucidef_add_switch "switch0" \
 			"0:lan" "1:lan" "2:lan" "6@eth0"
 		;;
+	kroks,*)
+		kroks_setup_network "${board##*,}"
+		;;
 	keenetic,kn-1613|\
 	motorola,mwr03)
 		ucidef_add_switch "switch0" \
 			"1:lan" "2:lan" "3:lan" "0:wan" "6@eth0"
-		;;
-	kroks,kndrt31r19)
-		ucidef_add_switch "switch0" \
-			"0:lan" "6@eth0"
-		ucidef_add_switch_attr "switch0" "enable" "false"
-		ucidef_set_interface_lan "eth0"
-		ucidef_set_interface "wan" device "/dev/cdc-wdm0" protocol "qmi"
 		;;
 	linksys,e5400)
 		ucidef_add_switch "switch0" \
@@ -232,6 +295,7 @@ ramips_setup_macs()
 		label_mac=$(mtd_get_mac_binary factory 0x4)
 		;;
 	duzun,dm06|\
+	kroks,*|\
 	netgear,r6020|\
 	netgear,r6080|\
 	netgear,r6120|\

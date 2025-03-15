@@ -1,0 +1,33 @@
+#include "mt7621_kroks.dtsi"
+
+/ {
+	aliases {
+		label-mac-device = &gmac0;
+	};
+};
+
+&gmac0 {
+	/* lan */
+	nvmem-cells = <&macaddr_factory_4>;
+	nvmem-cell-names = "mac-address";
+};
+
+&gmac1 {
+	/* wan */
+	nvmem-cells = <&macaddr_factory_4>;
+	nvmem-cell-names = "mac-address";
+	mac-address-increment = <1>;
+};
+
+&factory {
+	nvmem: nvmem-layout {
+		compatible = "fixed-layout";
+		#address-cells = <1>;
+		#size-cells = <1>;
+
+		/* gmac0 */
+		macaddr_factory_4: macaddr@4 {
+			reg = <0x4 0x6>;
+		};
+	};
+};

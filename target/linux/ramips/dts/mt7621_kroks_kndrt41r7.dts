@@ -1,0 +1,99 @@
+#include "mt7621_kroks_wifi_mt7603_mt7613.dtsi"
+
+/ {
+	compatible = "kroks,kndrt41r7", "mediatek,mt7621-soc";
+	model = "Kroks KNdRt41R7";
+
+	gpio_export {
+		compatible = "gpio-export";
+		#size-cells = <0>;
+
+		modem1power {
+			gpio-export,name = "modem1power";
+			gpio-export,output = <1>;
+			gpios = <&gpio 5 GPIO_ACTIVE_HIGH>;
+		};
+
+		modem2power {
+			gpio-export,name = "modem2power";
+			gpio-export,output = <1>;
+			gpios = <&gpio 7 GPIO_ACTIVE_HIGH>;
+		};
+
+		modem3power {
+			gpio-export,name = "modem3power";
+			gpio-export,output = <1>;
+			gpios = <&gpio 32 GPIO_ACTIVE_HIGH>;
+		};
+
+		modem4power {
+			gpio-export,name = "modem4power";
+			gpio-export,output = <1>;
+			gpios = <&gpio 33 GPIO_ACTIVE_HIGH>;
+		};
+
+		stm1power {
+			gpio-export,name = "stm1power";
+			gpio-export,output = <1>;
+			gpios = <&gpio 17 GPIO_ACTIVE_HIGH>;
+		};
+	};
+};
+
+&ethernet {
+	pinctrl-0 = <&mdio_pins>, <&rgmii1_pins>;
+};
+
+&switch0 {
+	ports {
+		port@0 {
+			status = "okay";
+			label = "wan";
+			nvmem-cells = <&macaddr_factory_2e>;
+			nvmem-cell-names = "mac-address";
+		};
+
+		port@1 {
+			status = "okay";
+			label = "lan1";
+		};
+
+		port@2 {
+			status = "okay";
+			label = "lan2";
+		};
+
+		port@3 {
+			status = "okay";
+			label = "lan3";
+		};
+	};
+};
+
+&state_default {
+	gpio {
+		groups = "uart2", "rgmii2";
+		function = "gpio";
+	};
+};
+
+&xhci {
+	mediatek,u2p-dis-msk = <0x2>;
+	mediatek,u3p-dis-msk = <0x1>;
+};
+
+&pcie {
+	reset-gpios = <&gpio 19 GPIO_ACTIVE_LOW>,
+		      <>,
+		      <&gpio 14 GPIO_ACTIVE_LOW>;
+};
+
+&i2c {
+	status = "okay";
+
+	mpu6050@68 {
+		compatible = "invensense,mpu6050";
+		reg = <0x68>;
+		reset-gpios = <&gpio 16 GPIO_ACTIVE_LOW>;
+	};
+};
