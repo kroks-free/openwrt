@@ -3,15 +3,14 @@
 #include <dt-bindings/leds/common.h>
 
 / {
-	compatible = "kroks,kndrt31r19", "mediatek,mt7628an-soc";
-	model = "Kroks KNdRt31R19";
+	compatible = "kroks,kndrt31r30", "mediatek,mt7628an-soc";
+	model = "Kroks KNdRt31R30";
 
 	aliases {
 		led-boot = &led_status;
 		led-failsafe = &led_status;
 		led-running = &led_status;
 		led-upgrade = &led_status;
-		serial1 = &uart1;
 	};
 
 	leds {
@@ -21,13 +20,6 @@
 			function = LED_FUNCTION_STATUS;
 			color = <LED_COLOR_ID_WHITE>;
 			gpios = <&gpio 2 GPIO_ACTIVE_LOW>;
-		};
-
-		led-1 {
-			function = LED_FUNCTION_WLAN;
-			color = <LED_COLOR_ID_WHITE>;
-			gpios = <&gpio 44 GPIO_ACTIVE_LOW>;
-			linux,default-trigger = "phy0tpt";
 		};
 	};
 
@@ -43,7 +35,7 @@
 
 		modem1sim1 {
 			gpio-export,name = "modem1sim1";
-			gpio-export,output = <0>;
+			gpio-export,output = <1>;
 			gpios = <&gpio 3 GPIO_ACTIVE_HIGH>;
 		};
 
@@ -52,28 +44,16 @@
 			gpio-export,output = <0>;
 			gpios = <&gpio 4 GPIO_ACTIVE_HIGH>;
 		};
-
-		modem1rsim1 {
-			gpio-export,name = "modem1rsim1";
-			gpio-export,output = <1>;
-			gpios = <&gpio 39 GPIO_ACTIVE_HIGH>;
-		};
-
-		modem1rsim2 {
-			gpio-export,name = "modem1rsim2";
-			gpio-export,output = <0>;
-			gpios = <&gpio 40 GPIO_ACTIVE_HIGH>;
-		};
 	};
-};
-
-&uart1 {
-	status = "okay";
 };
 
 &state_default {
 	gpio {
-		groups = "i2s", "i2c", "p4led_an", "p3led_an", "wled_an";
+		groups = "i2s", "i2c";
 		function = "gpio";
 	};
+};
+
+&wmac {
+	status = "disabled";
 };

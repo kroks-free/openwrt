@@ -3,6 +3,30 @@
 . /lib/functions/uci-defaults.sh
 . /lib/functions/system.sh
 
+
+ kroks_setup_network()
+ {
+ 	local board="$1"
+ 
+ 	case "$board" in
+ 	kndrt41r1|\
+ 	kndrt41r3|\
+ 	kndrt41r5|\
+	kndrt41r7|\
+	kndrt41r13)
+ 		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3" "wan"
+ 		;;
+ 	kndrt41r2|\
+ 	kndrt41r4|\
+ 	kndrt41r6|\
+	kndrt41r8|\
+	kndrt41r9|\
+	kndrt41r12)
+ 		ucidef_set_interface_lan "lan1 lan2"
+ 		;;
+ 	esac
+ }
+
 ramips_setup_interfaces()
 {
 	local board="$1"
@@ -105,6 +129,9 @@ ramips_setup_interfaces()
 	gnubee,gb-pc2)
 		ucidef_set_interface_lan "ethblack ethblue ethyellow"
 		;;
+	kroks,*)
+ 		kroks_setup_network "${board##*,}"
+ 		;;
 	linksys,re6500|\
 	netgear,wac104|\
 	zyxel,lte3301-plus)

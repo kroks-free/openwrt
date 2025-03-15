@@ -1,0 +1,61 @@
+#include "mt7621_kroks_wifi_mt7915.dtsi"
+
+/ {
+	compatible = "kroks,kndrt41r13", "mediatek,mt7621-soc";
+	model = "Kroks KNdRt41R13";
+
+	gpio_export {
+		compatible = "gpio-export";
+		#size-cells = <0>;
+
+		usb1power {
+			gpio-export,name = "usb1power";
+			gpio-export,output = <1>;
+			gpios = <&gpio 14 GPIO_ACTIVE_HIGH>;
+		};
+	};
+};
+
+&mdio {
+	ethphy4: ethernet-phy@4 {
+		reg = <4>;
+	};
+};
+
+&gmac1 {
+	status = "okay";
+	label = "wan";
+	phy-handle = <&ethphy4>;
+};
+
+&switch0 {
+	ports {
+		port@1 {
+			status = "okay";
+			label = "lan3";
+		};
+
+		port@2 {
+			status = "okay";
+			label = "lan2";
+		};
+
+		port@3 {
+			status = "okay";
+			label = "lan1";
+		};
+	};
+};
+
+&xhci {
+	mediatek,u2p-dis-msk = <0x1>;
+	mediatek,u3p-dis-msk = <0x1>;
+};
+
+&pcie2 {
+	status = "disabled";
+};
+
+&pcie2_phy {
+	status = "disabled";
+};

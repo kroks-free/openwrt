@@ -1,0 +1,12 @@
+#include "mt7628an_kroks_1eth.dtsi"
+
+&esw {
+	mediatek,portdisable = <0x3c>;
+};
+
+&state_default {
+	p1led_an {
+		groups = "p1led_an";
+		function = "p1led_an";
+	};
+};

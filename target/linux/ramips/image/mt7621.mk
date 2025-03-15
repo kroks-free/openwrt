@@ -1462,6 +1462,141 @@ define Device/keenetic_kn-3010
 endef
 TARGET_DEVICES += keenetic_kn-3010
 
+define Device/kroks_kndrt41r1
+  $(Device/dsa-migration)
+  $(Device/uimage-lzma-loader)
+  IMAGE_SIZE := 30m
+  DEVICE_VENDOR := Kroks
+  DEVICE_MODEL := Rt-Cse4 mXUW DS G
+  $(Device/Kroks-mm)
+  $(Device/Kroks-usbstor)
+  DEVICE_PACKAGES += kmod-mt7603 kmod-mt7615e kmod-mt7663-firmware-ap
+  SUPPORTED_DEVICES += kndrt41r1
+endef
+TARGET_DEVICES += kroks_kndrt41r1
+
+define Device/kroks_kndrt41r2
+  $(Device/dsa-migration)
+  $(Device/uimage-lzma-loader)
+  IMAGE_SIZE := 30m
+  DEVICE_VENDOR := Kroks
+  DEVICE_MODEL := Rt-Pot mXw DS RSIM G
+  $(Device/Kroks-mm)
+  DEVICE_PACKAGES += kmod-mt7603 kmod-mt7615e kmod-mt7663-firmware-ap
+  SUPPORTED_DEVICES += kndrt41r2
+endef
+TARGET_DEVICES += kroks_kndrt41r2
+
+define Device/kroks_kndrt41r3
+  $(Device/dsa-migration)
+  $(Device/uimage-lzma-loader)
+  IMAGE_SIZE := 30m
+  DEVICE_VENDOR := Kroks
+  DEVICE_MODEL := Rt-Cse4 UW G
+  DEVICE_PACKAGES :=
+  $(Device/Kroks-usbstor)
+  DEVICE_PACKAGES += kmod-mt7603 kmod-mt7615e kmod-mt7663-firmware-ap
+  SUPPORTED_DEVICES += kndrt41r3
+endef
+TARGET_DEVICES += kroks_kndrt41r3
+
+define Device/kroks_kndrt41r4
+  $(Device/dsa-migration)
+  $(Device/uimage-lzma-loader)
+  IMAGE_SIZE := 30m
+  DEVICE_VENDOR := Kroks
+  DEVICE_MODEL := Rt-Pot mXw DS G
+  $(Device/Kroks-mm)
+  DEVICE_PACKAGES += kmod-mt7603 kmod-mt7615e kmod-mt7663-firmware-ap
+  SUPPORTED_DEVICES += kndrt41r4
+endef
+TARGET_DEVICES += kroks_kndrt41r4
+
+define Device/kroks_kndrt41r5
+  $(Device/dsa-migration)
+  $(Device/uimage-lzma-loader)
+  IMAGE_SIZE := 30m
+  DEVICE_VENDOR := Kroks
+  DEVICE_MODEL := Rt-Cse4 mXUW6 DS G
+  $(Device/Kroks-mm)
+  $(Device/Kroks-usbstor)
+  DEVICE_PACKAGES += kmod-mt7915-firmware
+  SUPPORTED_DEVICES += kndrt41r5
+endef
+TARGET_DEVICES += kroks_kndrt41r5
+
+define Device/kroks_kndrt41r6
+  $(Device/dsa-migration)
+  $(Device/uimage-lzma-loader)
+  IMAGE_SIZE := 30m
+  DEVICE_VENDOR := Kroks
+  DEVICE_MODEL := Rt-Pot W G
+  DEVICE_PACKAGES := kmod-mt7603 kmod-mt7615e kmod-mt7663-firmware-ap
+  SUPPORTED_DEVICES += kndrt41r6
+endef
+TARGET_DEVICES += kroks_kndrt41r6
+
+define Device/kroks_kndrt41r7
+  $(Device/dsa-migration)
+  $(Device/uimage-lzma-loader)
+  IMAGE_SIZE := 30m
+  DEVICE_VENDOR := Kroks
+  DEVICE_MODEL := Rt-Cse4 4M mXW G
+  $(Device/Kroks-mm)
+  $(Device/Kroks-accel)
+  DEVICE_PACKAGES += kmod-mt7603 kmod-mt7615e kmod-mt7663-firmware-ap
+  SUPPORTED_DEVICES += kndrt41r7
+endef
+TARGET_DEVICES += kroks_kndrt41r7
+
+define Device/kroks_kndrt41r8
+  $(Device/dsa-migration)
+  $(Device/uimage-lzma-loader)
+  IMAGE_SIZE := 30m
+  DEVICE_VENDOR := Kroks
+  DEVICE_MODEL := Rt-Pot2 mX DS G
+  $(Device/Kroks-mm)
+  SUPPORTED_DEVICES += kndrt41r8
+endef
+TARGET_DEVICES += kroks_kndrt41r8
+
+define Device/kroks_kndrt41r9
+  $(Device/dsa-migration)
+  $(Device/uimage-lzma-loader)
+  IMAGE_SIZE := 30m
+  DEVICE_VENDOR := Kroks
+  DEVICE_MODEL := Rt-Pot mXw6 DS RSIM G
+  $(Device/Kroks-mm)
+  DEVICE_PACKAGES += kmod-mt7915-firmware
+  SUPPORTED_DEVICES += kndrt41r9
+endef
+TARGET_DEVICES += kroks_kndrt41r9
+
+define Device/kroks_kndrt41r12
+  $(Device/dsa-migration)
+  $(Device/uimage-lzma-loader)
+  IMAGE_SIZE := 30m
+  DEVICE_VENDOR := Kroks
+  DEVICE_MODEL := Rt-Pot mXw6 DS G
+  $(Device/Kroks-mm)
+  DEVICE_PACKAGES += kmod-mt7915-firmware
+  SUPPORTED_DEVICES += kndrt41r12
+endef
+TARGET_DEVICES += kroks_kndrt41r12
+
+define Device/kroks_kndrt41r13
+  $(Device/dsa-migration)
+  $(Device/uimage-lzma-loader)
+  IMAGE_SIZE := 30m
+  DEVICE_VENDOR := Kroks
+  DEVICE_MODEL := Rt-Cse4 UW6 G
+  DEVICE_PACKAGES :=
+  $(Device/Kroks-usbstor)
+  DEVICE_PACKAGES += kmod-mt7915-firmware
+  SUPPORTED_DEVICES += kndrt41r13
+endef
+TARGET_DEVICES += kroks_kndrt41r13
+
 define Device/lenovo_newifi-d1
   $(Device/dsa-migration)
   $(Device/uimage-lzma-loader)

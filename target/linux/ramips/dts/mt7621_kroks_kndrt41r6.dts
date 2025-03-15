@@ -1,0 +1,39 @@
+#include "mt7621_kroks_wifi_mt7603_mt7613.dtsi"
+
+/ {
+	compatible = "kroks,kndrt41r6", "mediatek,mt7621-soc";
+	model = "Kroks KNdRt41R6";
+};
+
+&mdio {
+	ethphy4: ethernet-phy@4 {
+		reg = <4>;
+	};
+};
+
+&gmac1 {
+	status = "okay";
+	label = "wan";
+	phy-handle = <&ethphy4>;
+};
+
+&switch0 {
+	ports {
+		port@3 {
+			status = "okay";
+			label = "lan";
+		};
+	};
+};
+
+&xhci {
+	status = "disabled";
+};
+
+&pcie2 {
+	status = "disabled";
+};
+
+&pcie2_phy {
+	status = "disabled";
+};

@@ -3,15 +3,14 @@
 #include <dt-bindings/leds/common.h>
 
 / {
-	compatible = "kroks,kndrt31r16", "mediatek,mt7628an-soc";
-	model = "Kroks KNdRt31R16";
+	compatible = "kroks,kndrt31r21", "mediatek,mt7628an-soc";
+	model = "Kroks KNdRt31R21";
 
 	aliases {
 		led-boot = &led_power;
 		led-failsafe = &led_power;
 		led-running = &led_power;
 		led-upgrade = &led_power;
-		serial1 = &uart1;
 	};
 
 	leds {
@@ -20,7 +19,7 @@
 		led_power: led-0 {
 			function = LED_FUNCTION_POWER;
 			color = <LED_COLOR_ID_WHITE>;
-			gpios = <&gpio 2 GPIO_ACTIVE_HIGH>;
+			gpios = <&gpio 2 GPIO_ACTIVE_LOW>;
 		};
 
 		led-1 {
@@ -35,16 +34,18 @@
 		compatible = "gpio-export";
 		#size-cells = <0>;
 
-		usb1power {
-			gpio-export,name = "usb1power";
+		modem1power {
+			gpio-export,name = "modem1power";
 			gpio-export,output = <1>;
 			gpios = <&gpio 1 GPIO_ACTIVE_HIGH>;
 		};
-	};
-};
 
-&uart1 {
-	status = "okay";
+		modem2power {
+			gpio-export,name = "modem2power";
+			gpio-export,output = <1>;
+			gpios = <&gpio 3 GPIO_ACTIVE_HIGH>;
+		};
+	};
 };
 
 &state_default {

@@ -1,0 +1,63 @@
+/dts-v1/;
+
+#include "mt7621.dtsi"
+
+#include <dt-bindings/input/input.h>
+#include <dt-bindings/gpio/gpio.h>
+#include <dt-bindings/leds/common.h>
+
+/ {
+	chosen {
+		bootargs = "console=ttyS0,57600";
+	};
+
+	aliases {
+		label-mac-device = &gmac0;
+		led-boot = &led_status;
+		led-failsafe = &led_status;
+		led-running = &led_status;
+		led-upgrade = &led_status;
+	};
+
+	leds {
+		compatible = "gpio-leds";
+
+		led_status: led-0 {
+			function = LED_FUNCTION_STATUS;
+			color = <LED_COLOR_ID_WHITE>;
+			gpios = <&gpio 6 GPIO_ACTIVE_LOW>;
+		};
+	};
+
+	keys {
+		compatible = "gpio-keys";
+
+		reset {
+			label = "reset";
+			gpios = <&gpio 18 GPIO_ACTIVE_LOW>;
+			linux,code = <KEY_RESTART>;
+		};
+	};
+
+	gpio_export {
+		compatible = "gpio-export";
+		#size-cells = <0>;
+
+		gpio8 {
+			gpio-export,name = "gpio8";
+			gpios = <&gpio 8 GPIO_ACTIVE_HIGH>;
+		};
+	};
+};
+
+&state_default {
+	gpio_reset {
+		groups = "wdt";
+		function = "gpio";
+	};
+
+	gpio_status {
+		groups = "uart3";
+		function = "gpio";
+	};
+};

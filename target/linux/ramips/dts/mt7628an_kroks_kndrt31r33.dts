@@ -1,10 +1,10 @@
-#include "mt7628an_kroks_1eth.dtsi"
+#include "mt7628an_kroks_2eth.dtsi"
 
 #include <dt-bindings/leds/common.h>
 
 / {
-	compatible = "kroks,kndrt31r19", "mediatek,mt7628an-soc";
-	model = "Kroks KNdRt31R19";
+	compatible = "kroks,kndrt31r33", "mediatek,mt7628an-soc";
+	model = "Kroks KNdRt31R33";
 
 	aliases {
 		led-boot = &led_status;

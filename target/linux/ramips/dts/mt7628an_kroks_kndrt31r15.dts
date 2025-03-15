@@ -3,8 +3,8 @@
 #include <dt-bindings/leds/common.h>
 
 / {
-	compatible = "kroks,kndrt31r19", "mediatek,mt7628an-soc";
-	model = "Kroks KNdRt31R19";
+	compatible = "kroks,kndrt31r15", "mediatek,mt7628an-soc";
+	model = "Kroks KNdRt31R15";
 
 	aliases {
 		led-boot = &led_status;
@@ -21,13 +21,6 @@
 			function = LED_FUNCTION_STATUS;
 			color = <LED_COLOR_ID_WHITE>;
 			gpios = <&gpio 2 GPIO_ACTIVE_LOW>;
-		};
-
-		led-1 {
-			function = LED_FUNCTION_WLAN;
-			color = <LED_COLOR_ID_WHITE>;
-			gpios = <&gpio 44 GPIO_ACTIVE_LOW>;
-			linux,default-trigger = "phy0tpt";
 		};
 	};
 
@@ -73,7 +66,11 @@
 
 &state_default {
 	gpio {
-		groups = "i2s", "i2c", "p4led_an", "p3led_an", "wled_an";
+		groups = "i2s", "i2c", "p4led_an", "p3led_an";
 		function = "gpio";
 	};
+};
+
+&wmac {
+	status = "disabled";
 };

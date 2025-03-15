@@ -1,0 +1,35 @@
+#include "mt7621_kroks_v2.dtsi"
+
+&state_default {
+	gpio_leds {
+		groups = "jtag";
+		function = "gpio";
+	};
+};
+
+&nvmem {
+	/* MT7915 */
+	eeprom_factory_0: eeprom@0 {
+		reg = <0x0 0xe00>;
+	};
+};
+
+&pcie {
+	status = "okay";
+};
+
+&pcie1 {
+	wifi@0,0 {
+		compatible = "mediatek,mt76";
+		reg = <0x0000 0 0 0 0>;
+		mediatek,disable-radar-background;
+		ieee80211-freq-limit = <2400000 2500000>, <5170000 5835000>;
+
+		nvmem-cells = <&eeprom_factory_0>;
+		nvmem-cell-names = "eeprom";
+
+		led {
+			led-active-low;
+		};
+	};
+};

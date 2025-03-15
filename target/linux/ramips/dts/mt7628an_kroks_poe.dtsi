@@ -1,0 +1,30 @@
+/ {
+	gpio_export {
+		compatible = "gpio-export";
+
+		/* not used in the new driver but can be used for
+		 * hwmon_notify_event implementation
+		 */
+		tpsupdate {
+			gpio-export,name = "tpsupdate";
+			gpios = <&gpio 11 GPIO_ACTIVE_LOW>;
+		};
+	};
+};
+
+&i2c {
+	status = "okay";
+
+	tps23861@20 {
+		compatible = "ti,tps23861";
+		reg = <0x20>;
+		shunt-resistor-micro-ohms = <250000>;
+	};
+};
+
+&state_default {
+	gpio_poe {
+		groups = "gpio";
+		function = "gpio";
+	};
+};
