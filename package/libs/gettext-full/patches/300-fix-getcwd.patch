@@ -1,0 +1,31 @@
+--- a/gettext-runtime/intl/dcigettext.c
++++ b/gettext-runtime/intl/dcigettext.c
+@@ -138,13 +138,10 @@ extern int errno;
+ # define tfind __tfind
+ #else
+ # if !defined HAVE_GETCWD
+-char *getwd ();
+ #  define getcwd(buf, max) getwd (buf)
+ # else
+ #  if VMS
+ #   define getcwd(buf, max) (getcwd) (buf, max, 0)
+-#  else
+-char *getcwd ();
+ #  endif
+ # endif
+ # ifndef HAVE_STPCPY
+--- a/gettext-runtime/intl/gettextP.h
++++ b/gettext-runtime/intl/gettextP.h
+@@ -113,12 +113,7 @@ extern char *libintl_dcigettext (const c
+ # define SWAP(i) bswap_32 (i)
+ #else
+ static inline nls_uint32
+-# ifdef __cplusplus
+ SWAP (nls_uint32 i)
+-# else
+-SWAP (i)
+-     nls_uint32 i;
+-# endif
+ {
+   return (i << 24) | ((i & 0xff00) << 8) | ((i >> 8) & 0xff00) | (i >> 24);
+ }
