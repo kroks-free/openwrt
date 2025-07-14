@@ -447,11 +447,32 @@ static void esw_set_gsc(struct rt305x_esw *esw)
 
 static int esw_apply_config(struct switch_dev *dev);
 
+static void esw_apply_mapping(struct rt305x_esw *esw)
+{
+	int i;
+	u8 port_mask = RT305X_ESW_PORTS_INTERNAL & ~esw->port_disable;
+	u8 lan_ports = esw->port_map & port_mask;
+	u8 wan_ports = ~esw->port_map & port_mask;
+
+	esw->global_vlan_enable = 1;
+	esw->vlans[0].vid = 1; // for lan
+	esw->vlans[0].ports = lan_ports | RT305X_ESW_PORTS_CPU;
+	esw->vlans[1].vid = 2; // for wan
+	esw->vlans[1].ports = wan_ports | RT305X_ESW_PORTS_CPU;
+	for (i = 0; i < 5; i++) {
+		if (esw->port_disable & BIT(i))
+			continue;
+
+		esw->ports[i].untag = 1;
+		esw->ports[i].pvid = esw->port_map & BIT(i) ? \
+			esw->vlans[0].vid : esw->vlans[1].vid;
+	}
+}
+
 static void esw_hw_init(struct rt305x_esw *esw)
 {
 	int i;
 	u8 port_disable = 0;
-	u8 port_map = RT305X_ESW_PMAP_LLLLLL;
 
 	/* vodoo from original driver */
 	esw_w32(esw, 0xC8A07850, RT305X_ESW_REG_FCT0);
@@ -637,7 +658,7 @@ static void esw_hw_init(struct rt305x_esw *esw)
 				RT5350_EWS_REG_LED_CONTROL);
 
 		rt305x_mii_write(esw, 0, 31, 0x2000); /* change G2 page */
-		rt305x_mii_write(esw, 0, 26, 0x0020);
+		rt305x_mii_write(esw, 0, 26, 0x0000);
 
 		for (i = 0; i < 5; i++) {
 			rt305x_mii_write(esw, i, 31, 0x8000);
@@ -656,8 +677,6 @@ static void esw_hw_init(struct rt305x_esw *esw)
 			rt305x_mii_write(esw, i, 24, 0x1610);
 			rt305x_mii_write(esw, i, 30, 0x1f15);
 			rt305x_mii_write(esw, i, 28, 0x6111);
-			rt305x_mii_write(esw, i, 31, 0x2000);
-			rt305x_mii_write(esw, i, 26, 0x0000);
 		}
 
 		/* 100Base AOI setting */
@@ -714,18 +733,7 @@ static void esw_hw_init(struct rt305x_esw *esw)
 	}
 
 	if (esw->port_map)
-		port_map = esw->port_map;
-	else
-		port_map = RT305X_ESW_PMAP_LLLLLL;
-
-	/* Unused HW feature, but still nice to be consistent here...
-	 * This is also exported to userspace ('lan' attribute) so it's
-	 * conveniently usable to decide which ports go into the wan vlan by
-	 * default.
-	 */
-	esw_rmw(esw, RT305X_ESW_REG_SGC2,
-		RT305X_ESW_SGC2_LAN_PMAP_M << RT305X_ESW_SGC2_LAN_PMAP_S,
-		port_map << RT305X_ESW_SGC2_LAN_PMAP_S);
+		esw_apply_mapping(esw);
 
 	/* make the switch leds blink */
 	for (i = 0; i < RT305X_ESW_NUM_LEDS; i++)
