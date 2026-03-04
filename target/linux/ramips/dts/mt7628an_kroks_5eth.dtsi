@@ -1,0 +1,12 @@
+#include "mt7628an_kroks_4eth.dtsi"
+
+&esw {
+	/delete-property/ mediatek,portdisable;
+};
+
+&state_default {
+	p4led_an {
+		groups = "p4led_an";
+		function = "p4led_an";
+	};
+};

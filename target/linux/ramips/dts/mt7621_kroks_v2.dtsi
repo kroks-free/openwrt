@@ -1,0 +1,86 @@
+#include "mt7621_kroks.dtsi"
+
+/ {
+	watchdog {
+		compatible = "linux,wdt-gpio";
+		gpios = <&gpio 8 GPIO_ACTIVE_LOW>;
+		hw_algo = "toggle";
+		hw_margin_ms = <25000>;
+		always-running;
+	};
+};
+
+&spi0 {
+	status = "okay";
+
+	/* Winbond W25Q256FV */
+	flash@0 {
+		compatible = "jedec,spi-nor";
+		reg = <0>;
+		spi-max-frequency = <31000000>;
+		broken-flash-reset;
+
+		partitions {
+			compatible = "dynamic-partitions";
+			#address-cells = <1>;
+			#size-cells = <1>;
+
+			partition@0 {
+				label = "u-boot";
+				reg = <0x0 0x30000>;
+				read-only;
+			};
+
+			partition@30000 {
+				label = "u-boot-env";
+				reg = <0x30000 0x10000>;
+			};
+
+			factory: partition@40000 {
+				label = "factory";
+				reg = <0x40000 0x10000>;
+				read-only;
+			};
+
+			partition@50000 {
+				compatible = "denx,uimage";
+				label = "firmware";
+				reg = <0x50000 0x100000>;
+				dynamic-end;
+			};
+
+			memory {
+				label = "memory";
+				reg = <0x100000 0x100000>;
+				tail-partition;
+			};
+		};
+	};
+};
+
+&gmac0 {
+	/* lan */
+	nvmem-cells = <&macaddr_factory_4 0>;
+	nvmem-cell-names = "mac-address";
+};
+
+&gmac1 {
+	/* wan */
+	nvmem-cells = <&macaddr_factory_4 1>;
+	nvmem-cell-names = "mac-address";
+};
+
+&factory {
+	nvmem_layout: nvmem-layout {
+		compatible = "fixed-layout";
+		#address-cells = <1>;
+		#size-cells = <1>;
+
+		/* gmac0 */
+		macaddr_factory_4: macaddr@4 {
+			compatible = "mac-base";
+			reg = <0x4 0x6>;
+			#nvmem-cell-cells = <1>;
+		};
+	};
+};
