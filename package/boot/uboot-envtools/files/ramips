@@ -9,6 +9,18 @@ touch /etc/config/ubootenv
 . /lib/uboot-envtools.sh
 . /lib/functions.sh
 
+kroks_setup_env() {
+	local board="$1"
+
+	case "$board" in
+	*,kndrt31r*|\
+	*,kndrt41r*|\
+	*,kndrt42r*)
+		ubootenv_add_uci_config "/dev/mtd1" "0x0" "0x1000" "0x10000"
+		;;
+	esac
+}
+
 board=$(board_name)
 
 case "$board" in
@@ -158,6 +170,9 @@ genexis,pulse-ex400)
 netgear,wax214v2)
 	ubootenv_add_uci_config "/dev/mtd1" "0x0" "0x20000" "0x20000"
 	ubootenv_add_uci_sys_config "/dev/mtd1" "0x20000" "0x8000" "0x20000"
+	;;
+*)
+	kroks_setup_env "$board"
 	;;
 esac
 
