@@ -1,0 +1,72 @@
+#include "mt7621_kroks_wifi_mt7915.dtsi"
+
+/ {
+	compatible = "kroks,kndrt42r1", "mediatek,mt7621-soc";
+	model = "Kroks KNdRt42R1";
+
+	gpio_export {
+		compatible = "gpio-export";
+		#size-cells = <0>;
+
+		modem1power {
+			gpio-export,name = "modem1power";
+			gpio-export,output = <1>;
+			gpios = <&gpio 5 GPIO_ACTIVE_HIGH>;
+		};
+
+		usb1power {
+			gpio-export,name = "usb1power";
+			gpio-export,output = <1>;
+			gpios = <&gpio 14 GPIO_ACTIVE_HIGH>;
+		};
+
+		modem1sim1 {
+			gpio-export,name = "modem1sim1";
+			gpio-export,output = <1>;
+			gpios = <&gpio 17 GPIO_ACTIVE_HIGH>;
+		};
+
+		modem1sim2 {
+			gpio-export,name = "modem1sim2";
+			gpio-export,output = <0>;
+			gpios = <&gpio 7 GPIO_ACTIVE_HIGH>;
+		};
+	};
+};
+
+&ethphy4 {
+	/delete-property/ interrupts;
+};
+
+&gmac1 {
+	status = "okay";
+	label = "wan";
+	phy-handle = <&ethphy4>;
+};
+
+&switch0 {
+	ports {
+		port@1 {
+			status = "okay";
+			label = "lan3";
+		};
+
+		port@2 {
+			status = "okay";
+			label = "lan2";
+		};
+
+		port@3 {
+			status = "okay";
+			label = "lan1";
+		};
+	};
+};
+
+&pcie2 {
+	status = "disabled";
+};
+
+&pcie2_phy {
+	status = "disabled";
+};

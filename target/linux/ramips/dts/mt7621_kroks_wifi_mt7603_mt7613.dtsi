@@ -1,0 +1,67 @@
+#include "mt7621_kroks_v1.dtsi"
+
+/ {
+	gpio-leds {
+		compatible = "gpio-leds";
+
+		led-1 {
+			color = <LED_COLOR_ID_WHITE>;
+			gpios = <&gpio 13 GPIO_ACTIVE_LOW>;
+			function = LED_FUNCTION_WLAN_2GHZ;
+			linux,default-trigger = "phy0tpt";
+		};
+
+		led-2 {
+			color = <LED_COLOR_ID_WHITE>;
+			gpios = <&gpio 15 GPIO_ACTIVE_LOW>;
+			function = LED_FUNCTION_WLAN_5GHZ;
+			linux,default-trigger = "phy1tpt";
+		};
+	};
+};
+
+&state_default {
+	/* wifi leds */
+	gpio_jtag {
+		groups = "jtag";
+		function = "gpio";
+	};
+};
+
+&nvmem_layout {
+	/* MT7603 */
+	eeprom_factory_0: eeprom@0 {
+		reg = <0x0 0x400>;
+	};
+
+	/* MT7613 */
+	eeprom_factory_8000: eeprom@8000 {
+		reg = <0x8000 0x4da8>;
+	};
+};
+
+&pcie {
+	status = "okay";
+};
+
+&pcie0 {
+	wifi@0,0 {
+		compatible = "mediatek,mt76";
+		reg = <0x0000 0 0 0 0>;
+		ieee80211-freq-limit = <2400000 2500000>;
+
+		nvmem-cells = <&eeprom_factory_0>;
+		nvmem-cell-names = "eeprom";
+	};
+};
+
+&pcie1 {
+	wifi@0,0 {
+		compatible = "mediatek,mt76";
+		reg = <0x0000 0 0 0 0>;
+		ieee80211-freq-limit = <5170000 5835000>;
+
+		nvmem-cells = <&eeprom_factory_8000>;
+		nvmem-cell-names = "eeprom";
+	};
+};
