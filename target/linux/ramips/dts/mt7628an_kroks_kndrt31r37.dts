@@ -1,0 +1,87 @@
+#include "mt7628an_kroks_4reth.dtsi"
+
+#include <dt-bindings/leds/common.h>
+
+/ {
+	compatible = "kroks,kndrt31r37", "mediatek,mt7628an-soc";
+	model = "Kroks KNdRt31R37";
+
+	aliases {
+		led-boot = &led_power;
+		led-failsafe = &led_power;
+		led-running = &led_power;
+		led-upgrade = &led_power;
+	};
+
+	gpio-leds {
+		compatible = "gpio-leds";
+
+		led_power: led-0 {
+			color = <LED_COLOR_ID_WHITE>;
+			gpios = <&gpio 2 GPIO_ACTIVE_LOW>;
+			function = LED_FUNCTION_POWER;
+		};
+
+		led-1 {
+			color = <LED_COLOR_ID_WHITE>;
+			gpios = <&gpio 44 GPIO_ACTIVE_LOW>;
+			function = LED_FUNCTION_WLAN;
+			linux,default-trigger = "phy0tpt";
+		};
+	};
+
+	gpio_export {
+		compatible = "gpio-export";
+		#size-cells = <0>;
+
+		modem1power {
+			gpio-export,name = "modem1power";
+			gpio-export,output = <1>;
+			gpios = <&gpio 1 GPIO_ACTIVE_HIGH>;
+		};
+
+		modem2power {
+			gpio-export,name = "modem2power";
+			gpio-export,output = <1>;
+			gpios = <&gpio 3 GPIO_ACTIVE_HIGH>;
+		};
+
+		usb1power {
+			gpio-export,name = "usb1power";
+			gpio-export,output = <1>;
+			gpios = <&gpio 4 GPIO_ACTIVE_HIGH>;
+		};
+
+		/* deprecated */
+		gpio11 {
+			gpio-export,name = "gpio11";
+			gpios = <&gpio 11 GPIO_ACTIVE_HIGH>;
+		};
+
+		/* deprecated */
+		gpio37 {
+			gpio-export,name = "gpio37";
+			gpio-export,output = <0>;
+			gpios = <&gpio 37 GPIO_ACTIVE_HIGH>;
+		};
+	};
+};
+
+/* drop lan/wan partition */
+&esw {
+	/delete-property/ mediatek,portmap;
+	/delete-property/ mediatek,portdisable;
+};
+
+&state_default {
+	gpio {
+		groups = "i2s", "i2c", "wled_an";
+		function = "gpio";
+	};
+
+	/* deprecated */
+	gpio_kdevice {
+		groups = "gpio", "refclk";
+		function = "gpio";
+	};
+};

@@ -2,6 +2,30 @@
 . /lib/functions/uci-defaults.sh
 . /lib/functions/system.sh
 
+kroks_setup_network()
+{
+	local board="$1"
+
+	case "$board" in
+	kndrt41r1|\
+	kndrt41r3|\
+	kndrt41r7|\
+	kndrt42r1|\
+	kndrt42r3)
+		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3" "wan"
+		;;
+	kndrt41r2|\
+	kndrt41r4|\
+	kndrt41r6|\
+	kndrt42r2|\
+	kndrt42r4|\
+	kndrt42r5|\
+	kndrt42r6)
+		ucidef_set_interface_lan "lan1 lan2"
+		;;
+	esac
+}
+
 ramips_setup_interfaces()
 {
 	local board="$1"
@@ -137,6 +161,9 @@ ramips_setup_interfaces()
 		;;
 	gnubee,gb-pc2)
 		ucidef_set_interface_lan "ethblack ethblue ethyellow"
+		;;
+	kroks,*)
+		kroks_setup_network "${board##*,}"
 		;;
 	mikrotik,routerboard-760igs)
 		ucidef_set_interfaces_lan_wan "lan2 lan3 lan4 lan5" "wan sfp"

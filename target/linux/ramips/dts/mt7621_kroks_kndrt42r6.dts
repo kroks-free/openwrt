@@ -1,0 +1,36 @@
+#include "mt7621_kroks_wifi_mt7915.dtsi"
+
+/ {
+	compatible = "kroks,kndrt42r6", "mediatek,mt7621-soc";
+	model = "Kroks KNdRt42R6";
+};
+
+&switch0 {
+	ports {
+		port@3 {
+			status = "okay";
+			label = "lan2";
+		};
+
+		port@4 {
+			status = "okay";
+			label = "lan1";
+		};
+	};
+};
+
+&usb_phy {
+	status = "disabled";
+};
+
+&xhci {
+	status = "disabled";
+};
+
+&pcie2 {
+	status = "disabled";
+};
+
+&pcie2_phy {
+	status = "disabled";
+};
